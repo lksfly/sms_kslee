@@ -1,0 +1,31 @@
+
+1. 운영서버
+
+	(1) 파일수정: vi /home/semas/apache-tomcat-8.5.24/bin/catalina.sh
+		JAVA_OPTS="$JAVA_OPTS -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dapplication.properties=application_R.properties -Duser.timezone=GMT+09:00"
+		JAVA_OPTS="$JAVA_OPTS -Xmx2048m -Xms2048m -XX:PermSize=128M -XX:MaxPermSize=128M -XX:NewSize=512M -XX:MaxNewSize=1024M -Djava.net.preferIPv4Stack=true"
+		
+	(2) 파일생성: vi /etc/logrotate.d/tomcat
+		/home/semas/apache-tomcat-8.5.24/logs/catalina.out {
+		    su root root
+		    copytruncate
+		    compress
+		    daily
+		    rotate 30
+		    missingok
+		    notifempty
+		    dateext
+		}
+		
+	(3) 테스트용 실행명령: logrotate -f /etc/logrotate.d/tomcat
+	
+	(4) 파일내용 : vi /usr/local/bin/rm_semas_v3_server.sh {
+		    #!/bin/sh
+			# 톰캣 로그  5일치 남기고 삭제(로컬) 파일위치=/usr/local/bin/rm_semas_v3_server.sh
+			find /home/semas/apache-tomcat-8.5.24/logs/*.log -mtime +30 -exec rm -f {} \;
+			find /home/semas/apache-tomcat-8.5.24/logs/*.txt -mtime +30 -exec rm -f {} \;
+	    }
+	    vi /etc/crontab {
+	    	매일 오전 2시에 톰캣로그 삭제
+			0 2 * * *   root    /usr/local/bin/rm_semas_v3_server.sh
+	    }

@@ -1,0 +1,227 @@
+package kr.bizdata.semas.pms.bnft.web;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.bizdata.core.config.Config;
+import kr.bizdata.core.exception.BzdException;
+import kr.bizdata.core.model.Paging;
+import kr.bizdata.core.model.RestResult;
+import kr.bizdata.core.model.RestResultDatatables;
+import kr.bizdata.core.servlet.AbstractController;
+import kr.bizdata.core.util.DateUtil;
+import kr.bizdata.core.util.NumberUtil;
+import kr.bizdata.core.util.RequestUtil;
+import kr.bizdata.semas.pms.bnft.service.BnftBizMstrService;
+import kr.bizdata.semas.pms.cmn.info.CmnCdInfo;
+import kr.bizdata.semas.pms.cmn.service.CmnCdService;
+import kr.bizdata.semas.pms.sprt.service.SprtBizSttsService;
+
+/**
+ * 기업마스터 화면
+ */
+@Controller
+public class BnftBizMstrController extends AbstractController {
+	
+	@Autowired
+	private BnftBizMstrService service;
+	
+	@Autowired
+	private CmnCdService cmnCdService;
+	@Autowired
+	private SprtBizSttsService sprtBizSttsService;
+	
+	/**
+	 * 기업마스터 화면
+	 */
+	@RequestMapping(value = "/bnft/bnftBizMstr")
+	public String bnftBiz(HttpServletRequest request, Authentication auth) {
+		
+		List<CmnCdInfo> bzmnTypeList = cmnCdService.selectList("BZMN_TYPE_CD"); // 사업자유형 목록
+		List<CmnCdInfo> srcSysList = cmnCdService.selectList("SRC_SYS_CD"); // 출처시스템 (사업명) 목록
+		
+		Date current = new Date(); // 현재
+		String srchStartYmd = DateUtil.format(DateUtil.addDays(current, -30), "yyyy-MM-dd");
+		String srchEndYmd = DateUtil.format(DateUtil.addDays(current, -0), "yyyy-MM-dd");
+		
+		request.setAttribute("bzmnTypeList", bzmnTypeList);
+		request.setAttribute("srcSysList", srcSysList);
+		request.setAttribute("srchStartYmd", srchStartYmd);
+		request.setAttribute("srchEndYmd", srchEndYmd);
+		
+		return "/bnft/bnftBizMstr";
+	}
+	
+	private Map<String, Object> getSelectListParam(HttpServletRequest request) {
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("BRNO",         RequestUtil.getParam(request, "BRNO",         null));
+		param.put("ENT_NM",       RequestUtil.getParam(request, "ENT_NM",       null));
+		param.put("CEO_NM",       RequestUtil.getParam(request, "CEO_NM",       null));
+		param.put("BZMN_TYPE_CD", RequestUtil.getParam(request, "BZMN_TYPE_CD", null));
+		param.put("SRC_SYS_CD",   RequestUtil.getParam(request, "SRC_SYS_CD",   null));
+		param.put("srchStartYmd", RequestUtil.getParam(request, "srchStartYmd", null));
+		param.put("srchEndYmd",   RequestUtil.getParam(request, "srchEndYmd",   null));
+		
+		if (param.get("srchStartYmd") != null && param.get("srchEndYmd") != null) {
+			param.put("srchStartDt", DateUtil.parse(param.get("srchStartYmd") + "000000000", "yyyyMMddHHmmssSSS"));
+			param.put("srchEndDt", DateUtil.parse(param.get("srchEndYmd") + "235959999", "yyyyMMddHHmmssSSS"));
+		}
+		
+		return param;
+	}
+	
+	/**
+	 * 기업마스터 > 목록 API
+	 */
+	@RequestMapping(value = "/bnft/bnftBizMstr/api")
+	@ResponseBody
+	public RestResult bnftBizMstr_api(HttpServletRequest request, Authentication auth) {
+		
+		Map<String, Object> param = getSelectListParam(request);
+		
+		int draw = RequestUtil.getParamInt(request, "draw", 0);
+		String column = RequestUtil.getParam(request, "order[0][column]", null); // 소팅컬럼 인덱스
+		String sortName = RequestUtil.getParam(request, "columns["+ column +"][data]", null); // 소팅기준 컬럼명
+		String sortType = RequestUtil.getParam(request, "order[0][dir]", null); // 소팅유형 (asc, desc)
+		int startIndex = RequestUtil.getParamInt(request, "start", 0);
+		int rowsCnt = RequestUtil.getParamInt(request, "length", 10);
+		
+		Paging paging = new Paging(sortName, sortType, startIndex, rowsCnt);
+		
+		List<Map<String, Object>> list = service.selectList(param, paging);
+		
+		int totalCnt = service.countList(param);
+		
+		return new RestResultDatatables(list, totalCnt, draw, startIndex);
+	}
+	
+	/**
+	 * 기업마스터 > 엑셀 다운로드
+	 */
+	@RequestMapping(value = "/bnft/bnftBizMstr/excel")
+	public String bnftBizMstr_excel(HttpServletRequest request, Authentication auth) {
+		
+		Map<String, Object> param = getSelectListParam(request);
+		
+		int EXCEL_DOWNLOAD_MAXCOUNT = Config.getInt("bzd.excel.download.maxCount", 50000);
+		int totalCnt = service.countList(param);
+		if (totalCnt > EXCEL_DOWNLOAD_MAXCOUNT) { // 엑셀 다운로드 건수 제한
+			throw new BzdException("검색결과가 " + NumberUtil.numberFormat(Long.valueOf(EXCEL_DOWNLOAD_MAXCOUNT)) + "건을 초과하여 다운로드 할 수 없습니다.");
+		}
+		
+		String sortName = RequestUtil.getParam(request, "sortName", null); // 소팅기준 컬럼명
+		String sortType = RequestUtil.getParam(request, "sortType", null); // 소팅유형 (asc, desc)
+		
+		Paging paging = new Paging(sortName, sortType, 0, 0); // 전체 (rowsCnt = 0)
+		
+		List<Map<String, Object>> list = service.selectList(param, paging);
+		
+		String[] headers = { "No", "업체명", "대표자", "사업자유형", "사업자등록번호", "법인등록번호", "기본주소", "상세주소", "전화번호",
+				"창업일", "출처시스템" };
+		String[] dataKeys = { "NO", "ENT_NM", "CEO_NM", "BZMN_TYPE_NM", "BRNO", "CRNO", "ADDR", "DADDR", "TELNO",
+				"FNDN_YMD", "SRC_SYS_NM" };
+		
+		Map<String, Object> excelData = new HashMap<String, Object>();
+		excelData.put("fileName", "기업정보_" + DateUtil.format(new Date(), "yyyyMMdd"));
+		excelData.put("headers", headers);
+		excelData.put("dataKeys", dataKeys);
+		excelData.put("dataList", list);
+		
+		request.setAttribute("excelData", excelData);
+		
+		return "excelXlsxView";
+	}
+	
+	/**
+	 * 기업마스터 > 기업 상세정보 팝업
+	 */
+	@RequestMapping(value = "/bnft/bnftBizInfoModal")
+	public String bnftBizInfoModal(HttpServletRequest request, Authentication auth) {
+		
+		String brno = RequestUtil.getParam(request, "BRNO", null);
+		
+		Map<String, Object> info = service.select(brno);
+		
+		List<String> yearList = sprtBizSttsService.selectYearList(brno); // 사업연도 목록 (사업자등록번호 기준)
+		
+		request.setAttribute("info", info);
+		request.setAttribute("yearList", yearList);
+		
+		return "/bnft/bnftBizInfoModal";
+	}
+	
+	/**
+	 * 기업마스터 > 기업 상세정보 팝업 > 지원사업 이력 목록 API
+	 */
+	@RequestMapping(value = "/bnft/bnftBizInfoModal/api")
+	@ResponseBody
+	public RestResult bnftBizInfoModal_api(HttpServletRequest request, Authentication auth) {
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("SPRT_BIZ_YR",  RequestUtil.getParam(request, "SPRT_BIZ_YR",  null));
+		param.put("BRNO",         RequestUtil.getParam(request, "BRNO",         null));
+		
+		int draw = RequestUtil.getParamInt(request, "draw", 0);
+		String column = RequestUtil.getParam(request, "order[0][column]", null); // 소팅컬럼 인덱스
+		String sortName = RequestUtil.getParam(request, "columns["+ column +"][data]", null); // 소팅기준 컬럼명
+		String sortType = RequestUtil.getParam(request, "order[0][dir]", null); // 소팅유형 (asc, desc)
+		int startIndex = RequestUtil.getParamInt(request, "start", 0);
+		int rowsCnt = RequestUtil.getParamInt(request, "length", 10);
+		
+		Paging paging = new Paging(sortName, sortType, startIndex, rowsCnt);
+		
+		List<Map<String, Object>> list = sprtBizSttsService.selectList(param, paging);
+		
+		int totalCnt = sprtBizSttsService.countList(param);
+		
+		return new RestResultDatatables(list, totalCnt, draw, startIndex);
+	}
+	
+	/**
+	 * 기업마스터 > 기업 상세정보 팝업 > 지원사업 이력 엑셀 다운로드
+	 */
+	@RequestMapping(value = "/bnft/bnftBizInfoModal/excel")
+	public String bnftBizInfoModal_excel(HttpServletRequest request, Authentication auth) {
+		
+		String brno = RequestUtil.getParam(request, "BRNO", null);
+		String entNm = (String) service.select(brno).get("ENT_NM"); // 기업명
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("SPRT_BIZ_YR",  RequestUtil.getParam(request, "SPRT_BIZ_YR",  null));
+		param.put("BRNO",         RequestUtil.getParam(request, "BRNO",         null));
+		
+		String sortName = RequestUtil.getParam(request, "sortName", null); // 소팅기준 컬럼명
+		String sortType = RequestUtil.getParam(request, "sortType", null); // 소팅유형 (asc, desc)
+		
+		Paging paging = new Paging(sortName, sortType, 0, 0); // 전체 (rowsCnt = 0)
+		
+		List<Map<String, Object>> list = sprtBizSttsService.selectList(param, paging);
+		
+		String[] headers = { "No", "사업명", "세부사업명", "사업연도", "검색일자(지급/신청/수료)", "신청자명", "수혜금액(천원)",
+				"담당센터" };
+		String[] dataKeys = { "NO", "SRC_SYS_NM", "SPRT_BIZ_NM", "SPRT_BIZ_YR", "SLCTN_YMD", "APLCNT_NM", "GIVE_AMT",
+				"SPRT_CNTR_NM" };
+		
+		Map<String, Object> excelData = new HashMap<String, Object>();
+		excelData.put("fileName", "지원사업이력_" + entNm + "_" + DateUtil.format(new Date(), "yyyyMMdd"));
+		excelData.put("headers", headers);
+		excelData.put("dataKeys", dataKeys);
+		excelData.put("dataList", list);
+		
+		request.setAttribute("excelData", excelData);
+		
+		return "excelXlsxView";
+	}
+	
+}

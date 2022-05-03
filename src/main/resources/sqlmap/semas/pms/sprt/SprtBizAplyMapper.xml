@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 지원사업신청내역 -->
+<mapper namespace="kr.bizdata.semas.pms.sprt.mapper.SprtBizAplyMapper">
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="aplySn">
+		/* SQL ID : SprtBizAplyMapper.insert */
+		INSERT INTO SPRT_BIZ_APLY (
+		       SPRT_BIZ_SN      /* 지원사업일련번호 */
+		     , SPRT_CNTR_CD     /* 지원센터코드 */
+		     , APLY_STS_CD      /* 신청상태코드 */
+		     , BRNO             /* 사업자등록번호 */
+		     , ENT_NM           /* 기업명 */
+		     , CRNO             /* 법인등록번호 */
+		     , BZMN_TYPE_CD     /* 사업자유형코드 */
+		     , ENT_ZIP          /* 기업우편번호 */
+		     , ENT_ADDR         /* 기업기본주소 */
+		     , ENT_DADDR        /* 기업상세주소 */
+		     , FNDN_YMD         /* 설립일자 */
+		     , SLS_AMT          /* 매출액 */
+		     , FT_WRKR_CNT      /* 상시근로자수 */
+		     , CLSBIZ_YMD       /* 폐업일자 */
+		     , KSIC_LCLS_CD     /* 표준산업분류대분류코드 */
+		     , KSIC_MCLS_CD     /* 표준산업분류중분류코드 */
+		     , KSIC_SCLS_CD     /* 표준산업분류소분류코드 */
+		     , KSIC_CD          /* 표준산업분류코드 */
+		     , ENT_TELNO        /* 기업전화번호 */
+		     , DI_VAL           /* DI값 */
+		     , APLCNT_NM        /* 신청자명 */
+		     , GIVE_AMT         /* 지급금액 */
+		     , APLCNT_EML       /* 신청자이메일 */
+		     , APLCNT_TELNO     /* 신청자전화번호 */
+		     , APLCNT_MBNO      /* 신청자핸드폰 */
+		     , APLCNT_ZIP       /* 신청자우편번호 */
+		     , APLCNT_ADDR      /* 신청자기본주소 */
+		     , APLCNT_DADDR     /* 신청자상세주소 */
+		     , APLCNT_BRDT      /* 신청자생년월일 */
+		     , APLCNT_GNDR_CD   /* 신청자성별코드 */
+		     , CI_VAL           /* CI값 */
+		     , SRC_LGN_ID       /* 출처시스템로그인ID */
+		     , APLY_YMD         /* 신청일자 */
+		     , GIVE_YMD         /* 지급일자 */
+		     , CEO_NM           /* 대표자명 */
+		     , FNSH_YMD         /* 수료일자 */
+		     , SRC_REG_DT       /* 출처시스템등록일시 */
+		     , REG_DT           /* 등록일시 */
+		     , SLCTN_YMD        /* 선정일자 */
+		) VALUES (
+		       #{sprtBizSn}     /* 지원사업일련번호 */
+		     , #{sprtCntrCd}    /* 지원센터코드 */
+		     , #{aplyStsCd}     /* 신청상태코드 */
+		     , #{brno}          /* 사업자등록번호 */
+		     , #{entNm}         /* 기업명 */
+		     , #{crno}          /* 법인등록번호 */
+		     , #{bzmnTypeCd}    /* 사업자유형코드 */
+		     , #{entZip}        /* 기업우편번호 */
+		     , #{entAddr}       /* 기업기본주소 */
+		     , #{entDaddr}      /* 기업상세주소 */
+		     , #{fndnYmd}       /* 설립일자 */
+		     , #{slsAmt}        /* 매출액 */
+		     , #{ftWrkrCnt}     /* 상시근로자수 */
+		     , #{clsbizYmd}     /* 폐업일자 */
+		     , #{ksicLclsCd}    /* 표준산업분류대분류코드 */
+		     , #{ksicMclsCd}    /* 표준산업분류중분류코드 */
+		     , #{ksicSclsCd}    /* 표준산업분류소분류코드 */
+		     , #{ksicCd}        /* 표준산업분류코드 */
+		     , #{entTelno}      /* 기업전화번호 */
+		     , #{diVal}         /* DI값 */
+		     , #{aplcntNm}      /* 신청자명 */
+		     , #{giveAmt}       /* 지급금액 */
+		     , #{aplcntEml}     /* 신청자이메일 */
+		     , #{aplcntTelno}   /* 신청자전화번호 */
+		     , hex(aes_encrypt(#{aplcntMbno}, SHA2('F@42',512))) /* 신청자핸드폰 */
+		     , #{aplcntZip}     /* 신청자우편번호 */
+		     , #{aplcntAddr}    /* 신청자기본주소 */
+		     , #{aplcntDaddr}   /* 신청자상세주소 */
+		     , #{aplcntBrdt}    /* 신청자생년월일 */
+		     , #{aplcntGndrCd}  /* 신청자성별코드 */
+		     , #{ciVal}         /* CI값 */
+		     , #{srcLgnId}      /* 출처시스템로그인ID */
+		     , #{aplyYmd}       /* 신청일자 */
+		     , #{giveYmd}       /* 지급일자 */
+		     , #{ceoNm}         /* 대표자명 */
+		     , #{fnshYmd}       /* 수료일자 */
+		     , #{srcRegDt}      /* 출처시스템등록일시 */
+		     , NOW()            /* 등록일시 */
+		     , #{slctnYmd}      /* 선정일자 */
+		)
+	</insert>
+	
+	<update id="update">
+		/* SQL ID : SprtBizAplyMapper.update */
+		UPDATE SPRT_BIZ_APLY
+		   SET SPRT_BIZ_SN    = #{sprtBizSn}     /* 지원사업일련번호 */
+		     , SPRT_CNTR_CD   = #{sprtCntrCd}    /* 지원센터코드 */
+		     , APLY_STS_CD    = #{aplyStsCd}     /* 신청상태코드 */
+		     , BRNO           = #{brno}          /* 사업자등록번호 */
+		     , ENT_NM         = #{entNm}         /* 기업명 */
+		     , CRNO           = #{crno}          /* 법인등록번호 */
+		     , BZMN_TYPE_CD   = #{bzmnTypeCd}    /* 사업자유형코드 */
+		     , ENT_ZIP        = #{entZip}        /* 기업우편번호 */
+		     , ENT_ADDR       = #{entAddr}       /* 기업기본주소 */
+		     , ENT_DADDR      = #{entDaddr}      /* 기업상세주소 */
+		     , FNDN_YMD       = #{fndnYmd}       /* 설립일자 */
+		     , SLS_AMT        = #{slsAmt}        /* 매출액 */
+		     , FT_WRKR_CNT    = #{ftWrkrCnt}     /* 상시근로자수 */
+		     , CLSBIZ_YMD     = #{clsbizYmd}     /* 폐업일자 */
+		     , KSIC_LCLS_CD   = #{ksicLclsCd}    /* 표준산업분류대분류코드 */
+		     , KSIC_MCLS_CD   = #{ksicMclsCd}    /* 표준산업분류중분류코드 */
+		     , KSIC_SCLS_CD   = #{ksicSclsCd}    /* 표준산업분류소분류코드 */
+		     , KSIC_CD        = #{ksicCd}        /* 표준산업분류코드 */
+		     , ENT_TELNO      = #{entTelno}      /* 기업전화번호 */
+		     , DI_VAL         = #{diVal}         /* DI값 */
+		     , APLCNT_NM      = #{aplcntNm}      /* 신청자명 */
+		     , GIVE_AMT       = #{giveAmt}       /* 지급금액 */
+		     , APLCNT_EML     = #{aplcntEml}     /* 신청자이메일 */
+		     , APLCNT_TELNO   = #{aplcntTelno}   /* 신청자전화번호 */
+		     , APLCNT_MBNO    = hex(aes_encrypt(#{aplcntMbno}, SHA2('F@42',512))) /* 신청자핸드폰 */
+		     , APLCNT_ZIP     = #{aplcntZip}     /* 신청자우편번호 */
+		     , APLCNT_ADDR    = #{aplcntAddr}    /* 신청자기본주소 */
+		     , APLCNT_DADDR   = #{aplcntDaddr}   /* 신청자상세주소 */
+		     , APLCNT_BRDT    = #{aplcntBrdt}    /* 신청자생년월일 */
+		     , APLCNT_GNDR_CD = #{aplcntGndrCd}  /* 신청자성별코드 */
+		     , CI_VAL         = #{ciVal}         /* CI값 */
+		     , SRC_LGN_ID     = #{srcLgnId}      /* 출처시스템로그인ID */
+		     , APLY_YMD       = #{aplyYmd}       /* 신청일자 */
+		     , GIVE_YMD       = #{giveYmd}       /* 지급일자 */
+		     , CEO_NM         = #{ceoNm}         /* 대표자명 */
+		     , FNSH_YMD       = #{fnshYmd}       /* 수료일자 */
+		     , SRC_REG_DT     = #{srcRegDt}      /* 출처시스템등록일시 */
+		     , UPD_DT         = NOW()            /* 수정일시 */
+		     , SLCTN_YMD      = #{slctnYmd}      /* 선정일자 */
+		 WHERE APLY_SN = #{aplySn}  /* 신청일련번호 */
+	</update>
+	
+	<update id="update_2">
+		/* SQL ID : SprtBizAplyMapper.update_2 */
+		UPDATE SPRT_BIZ_APLY
+		   SET APLY_STS_CD    = #{aplyStsCd}     /* 신청상태코드 */
+		     , UPD_DT         = NOW()            /* 수정일시 */
+		 WHERE APLY_SN        = #{aplySn}        /* 신청일련번호 */
+	</update>
+	
+	<resultMap id="SprtBizAplyInfo" type="kr.bizdata.semas.pms.sprt.info.SprtBizAplyInfo" />
+	
+	<sql id="columns_SprtBizAplyInfo">
+		       APLY_SN          /* 신청일련번호 */
+		     , SPRT_BIZ_SN      /* 지원사업일련번호 */
+		     , SPRT_CNTR_CD     /* 지원센터코드 */
+		     , APLY_STS_CD      /* 신청상태코드 */
+		     , BRNO             /* 사업자등록번호 */
+		     , ENT_NM           /* 기업명 */
+		     , CRNO             /* 법인등록번호 */
+		     , BZMN_TYPE_CD     /* 사업자유형코드 */
+		     , ENT_ZIP          /* 기업우편번호 */
+		     , ENT_ADDR         /* 기업기본주소 */
+		     , ENT_DADDR        /* 기업상세주소 */
+		     , FNDN_YMD         /* 설립일자 */
+		     , SLS_AMT          /* 매출액 */
+		     , FT_WRKR_CNT      /* 상시근로자수 */
+		     , CLSBIZ_YMD       /* 폐업일자 */
+		     , KSIC_LCLS_CD     /* 표준산업분류대분류코드 */
+		     , KSIC_MCLS_CD     /* 표준산업분류중분류코드 */
+		     , KSIC_SCLS_CD     /* 표준산업분류소분류코드 */
+		     , KSIC_CD          /* 표준산업분류코드 */
+		     , ENT_TELNO        /* 기업전화번호 */
+		     , DI_VAL           /* DI값 */
+		     , APLCNT_NM        /* 신청자명 */
+		     , GIVE_AMT         /* 지급금액 */
+		     , APLCNT_EML       /* 신청자이메일 */
+		     , APLCNT_TELNO     /* 신청자전화번호 */
+		     , cast(aes_decrypt(unhex(APLCNT_MBNO), SHA2('F@42',512))as char) AS APLCNT_MBNO /* 신청자핸드폰 */
+		     , APLCNT_ZIP       /* 신청자우편번호 */
+		     , APLCNT_ADDR      /* 신청자기본주소 */
+		     , APLCNT_DADDR     /* 신청자상세주소 */
+		     , APLCNT_BRDT      /* 신청자생년월일 */
+		     , APLCNT_GNDR_CD   /* 신청자성별코드 */
+		     , CI_VAL           /* CI값 */
+		     , SRC_LGN_ID       /* 출처시스템로그인ID */
+		     , APLY_YMD         /* 신청일자 */
+		     , GIVE_YMD         /* 지급일자 */
+		     , CEO_NM           /* 대표자명 */
+		     , FNSH_YMD         /* 수료일자 */
+		     , SRC_REG_DT       /* 출처시스템등록일시 */
+		     , REG_DT           /* 등록일시 */
+		     , UPD_DT           /* 수정일시 */
+		     , SLCTN_YMD        /* 선정일자 */
+	</sql>
+	
+	<select id="select" resultMap="SprtBizAplyInfo">
+		/* SQL ID : SprtBizAplyMapper.select */
+		SELECT <include refid="columns_SprtBizAplyInfo" />
+		  FROM SPRT_BIZ_APLY
+		 WHERE APLY_SN = #{aplySn}  /* 신청일련번호 */
+	</select>
+	
+	<insert id="insert_edu">
+		/* SQL ID : SprtBizAplyMapper.insert_edu */
+		INSERT INTO EDU_SPRT_BIZ_APLY (PRGRM_SN, MBER_SN, APLY_SN) VALUES (#{prgrmSn}, #{mberSn}, #{aplySn})  /* 교육 */
+	</insert>
+	<insert id="insert_cnslt">
+		/* SQL ID : SprtBizAplyMapper.insert_cnslt */
+		INSERT INTO CNSLT_SPRT_BIZ_APLY (CNSLT_APLY_SN, ACTVT_YR, PLCY_CD, APLY_SN) VALUES (#{cnsltAplySn}, #{actvtYr}, #{plcyCd}, #{aplySn})  /* 컨설팅 */
+	</insert>
+	<insert id="insert_hope1">
+		/* SQL ID : SprtBizAplyMapper.insert_hope1 */
+		INSERT INTO HCNSLT_SPRT_BIZ_APLY (HOPE_CNSLT_APLY_NO, APLY_SN) VALUES (#{hopeCnsltAplyNo}, #{aplySn})  /* 희망리턴 (컨설팅) */
+	</insert>
+	<insert id="insert_hope2">
+		/* SQL ID : SprtBizAplyMapper.insert_hope2 */
+		INSERT INTO HREDU_SPRT_BIZ_APLY (REDU_CRS_APLY_NO, APLY_SN) VALUES (#{reduCrsAplyNo}, #{aplySn})  /* 희망리턴 (재기교육) */
+	</insert>
+	<insert id="insert_hope3">
+		/* SQL ID : SprtBizAplyMapper.insert_hope3 */
+		INSERT INTO HSBSDY_SPRT_BIZ_APLY (SBSDY_APLY_NO, APLY_SN) VALUES (#{sbsdyAplyNo}, #{aplySn})  /* 희망리턴 (장려금) */
+	</insert>
+	<insert id="insert_dln">
+		/* SQL ID : SprtBizAplyMapper.insert_dln */
+		INSERT INTO DLN_SPRT_BIZ_APLY (LN_APLY_NO, APLY_SN) VALUES (#{lnAplyNo}, #{aplySn})  /* 직접대출 */
+	</insert>
+	<insert id="insert_pln">
+		/* SQL ID : SprtBizAplyMapper.insert_pln */
+		INSERT INTO PLN_SPRT_BIZ_APLY (BRNO, CNFRM_ISSU_NO, APLY_SN) VALUES (#{brno}, #{cnfrmIssuNo}, #{aplySn})  /* 대리대출 */
+	</insert>
+	
+	<select id="selectAplySn_edu" resultType="Long">
+		/* SQL ID : SprtBizAplyMapper.selectAplySn_edu */
+		SELECT APLY_SN FROM EDU_SPRT_BIZ_APLY WHERE PRGRM_SN = #{prgrmSn} AND MBER_SN = #{mberSn}  /* 교육 */
+	</select>
+	<select id="selectAplySn_cnslt" resultType="Long">
+		/* SQL ID : SprtBizAplyMapper.selectAplySn_cnslt */
+		SELECT APLY_SN FROM CNSLT_SPRT_BIZ_APLY WHERE CNSLT_APLY_SN = #{cnsltAplySn} AND ACTVT_YR = #{actvtYr} AND PLCY_CD = #{plcyCd}  /* 컨설팅 */
+	</select>
+	<select id="selectAplySn_hope1" resultType="Long">
+		/* SQL ID : SprtBizAplyMapper.selectAplySn_hope1 */
+		SELECT APLY_SN FROM HCNSLT_SPRT_BIZ_APLY WHERE HOPE_CNSLT_APLY_NO = #{hopeCnsltAplyNo}  /* 희망리턴 (컨설팅) */
+	</select>
+	<select id="selectAplySn_hope2" resultType="Long">
+		/* SQL ID : SprtBizAplyMapper.selectAplySn_hope2 */
+		SELECT APLY_SN FROM HREDU_SPRT_BIZ_APLY WHERE REDU_CRS_APLY_NO = #{reduCrsAplyNo}  /* 희망리턴 (재기교육) */
+	</select>
+	<select id="selectAplySn_hope3" resultType="Long">
+		/* SQL ID : SprtBizAplyMapper.selectAplySn_hope3 */
+		SELECT APLY_SN FROM HSBSDY_SPRT_BIZ_APLY WHERE SBSDY_APLY_NO = #{sbsdyAplyNo}  /* 희망리턴 (장려금) */
+	</select>
+	<select id="selectAplySn_dln" resultType="Long">
+		/* SQL ID : SprtBizAplyMapper.selectAplySn_dln */
+		SELECT APLY_SN FROM DLN_SPRT_BIZ_APLY WHERE LN_APLY_NO = #{lnAplyNo}  /* 직접대출 */
+	</select>
+	<select id="selectAplySn_pln" resultType="Long">
+		/* SQL ID : SprtBizAplyMapper.selectAplySn_pln */
+		SELECT APLY_SN FROM PLN_SPRT_BIZ_APLY WHERE BRNO = #{brno} AND CNFRM_ISSU_NO = #{cnfrmIssuNo}  /* 대리대출 */
+	</select>
+	
+</mapper>

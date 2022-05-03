@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 수혜기업이력 -->
+<mapper namespace="kr.bizdata.semas.pms.bnft.mapper.BnftBizHistMapper">
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="entHistSn">
+		/* SQL ID : BnftBizHistMapper.insert */
+		INSERT INTO BNFT_BIZ_HIST (
+		       BRNO             /* 사업자등록번호 */
+		     , ENT_NM           /* 기업명 */
+		     , CRNO             /* 법인등록번호 */
+		     , ZIP              /* 우편번호 */
+		     , ADDR             /* 기본주소 */
+		     , DADDR            /* 상세주소 */
+		     , FNDN_YMD         /* 설립일자 */
+		     , SLS_AMT          /* 매출액 */
+		     , FT_WRKR_CNT      /* 상시근로자수 */
+		     , CLSBIZ_YMD       /* 폐업일자 */
+		     , KSIC_LCLS_CD     /* 표준산업분류대분류코드 */
+		     , KSIC_MCLS_CD     /* 표준산업분류중분류코드 */
+		     , KSIC_SCLS_CD     /* 표준산업분류소분류코드 */
+		     , KSIC_CD          /* 표준산업분류코드 */
+		     , TELNO            /* 전화번호 */
+		     , CEO_NM           /* 대표자명 */
+		     , SRC_SYS_CD       /* 출처시스템코드 */
+		     , SRC_REG_DT       /* 출처시스템등록일시 */
+		     , REG_DT           /* 등록일시 */
+		) VALUES (
+		       #{brno}          /* 사업자등록번호 */
+		     , #{entNm}         /* 기업명 */
+		     , #{crno}          /* 법인등록번호 */
+		     , #{zip}           /* 우편번호 */
+		     , #{addr}          /* 기본주소 */
+		     , #{daddr}         /* 상세주소 */
+		     , #{fndnYmd}       /* 설립일자 */
+		     , #{slsAmt}        /* 매출액 */
+		     , #{ftWrkrCnt}     /* 상시근로자수 */
+		     , #{clsbizYmd}     /* 폐업일자 */
+		     , #{ksicLclsCd}    /* 표준산업분류대분류코드 */
+		     , #{ksicMclsCd}    /* 표준산업분류중분류코드 */
+		     , #{ksicSclsCd}    /* 표준산업분류소분류코드 */
+		     , #{ksicCd}        /* 표준산업분류코드 */
+		     , #{telno}         /* 전화번호 */
+		     , #{ceoNm}         /* 대표자명 */
+		     , #{srcSysCd}      /* 출처시스템코드 */
+		     , #{srcRegDt}      /* 출처시스템등록일시 */
+		     , NOW()            /* 등록일시 */
+		)
+	</insert>
+	
+	<resultMap id="BnftBizHistInfo" type="kr.bizdata.semas.pms.bnft.info.BnftBizHistInfo" />
+	
+	<sql id="columns_BnftBizHistInfo">
+		       BRNO             /* 사업자등록번호 */
+		     , ENT_HIST_SN      /* 기업이력일련번호 */
+		     , ENT_NM           /* 기업명 */
+		     , CRNO             /* 법인등록번호 */
+		     , ZIP              /* 우편번호 */
+		     , ADDR             /* 기본주소 */
+		     , DADDR            /* 상세주소 */
+		     , FNDN_YMD         /* 설립일자 */
+		     , SLS_AMT          /* 매출액 */
+		     , FT_WRKR_CNT      /* 상시근로자수 */
+		     , CLSBIZ_YMD       /* 폐업일자 */
+		     , KSIC_LCLS_CD     /* 표준산업분류대분류코드 */
+		     , KSIC_MCLS_CD     /* 표준산업분류중분류코드 */
+		     , KSIC_SCLS_CD     /* 표준산업분류소분류코드 */
+		     , KSIC_CD          /* 표준산업분류코드 */
+		     , TELNO            /* 전화번호 */
+		     , CEO_NM           /* 대표자명 */
+		     , SRC_SYS_CD       /* 출처시스템코드 */
+		     , SRC_REG_DT       /* 출처시스템등록일시 */
+		     , REG_DT           /* 등록일시 */
+	</sql>
+	
+	<select id="select" resultMap="BnftBizHistInfo">
+		/* SQL ID : BnftBizHistMapper.select */
+		SELECT <include refid="columns_BnftBizHistInfo" />
+		  FROM BNFT_BIZ_HIST
+		 WHERE BRNO = #{brno}  /* 사업자등록번호 */
+		   AND ENT_HIST_SN = #{entHistSn}  /* 기업이력일련번호 */
+	</select>
+	
+</mapper>

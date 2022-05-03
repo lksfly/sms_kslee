@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<title>bizdata source</title>
+
+		<!-- 플러그인 css -->
+		<link rel="stylesheet" href="./assets/plugin/normalize/normalize.css">
+
+		<!-- fontawesome css -->
+		<link rel="stylesheet" href="./assets/plugin/fontawesome/css/all.min.css">
+
+		<!-- datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/datatables.css">
+		<!-- datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/custom_datatables.css">
+
+		<!-- 자체 css -->
+		<link rel="stylesheet" href="./assets/css/main.css">
+
+
+		<style>
+		</style>
+	</head>
+
+	<body>
+		<div class="gnb-wrapper">
+			<header class="gnb-header fixed">
+				<a href="./modul List.html" class="header-logo"><img src="./assets/images/logo/semas.svg" /></a>
+				<ul class="header-nav">
+					<li class="on"><a href="#">가이드</a></li>
+					<li><a href="#">레이아웃</a></li>
+					<li><a href="#">엘리먼트</a></li>
+				</ul>
+				<div class="header-end">
+					<div class="">icon</div>
+				</div>
+			</header>
+			<div class="gnb-body">
+				<nav class="gnb-nav fixed">
+					<ul class="gnb-nav-list">
+						<li class="gnb-nab-group active">
+							<a href="#" class="menu-title">basis</a>
+							<ul class="gnb-nav-sub-list">
+								<li><a href="./modul List.html">index</a></li>
+								<li><a href="./modul List.html">index</a></li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+				<article class="content-wrapper">
+					<section class="container-fluid">
+						<h1 class="page-title">modal</h1>
+						<h3>프로젝트 내부에서 사용하는 modal입니다.</h3><br>
+
+						<div class="row">
+							<div class="col s12 l4">
+								<div class="card">
+									<div class="card-header row">
+										<div class="content-title">modal</div>
+									</div>
+									<div class="card-body">
+										<h4>일반모달</h4>
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-l')">large 모달</button>
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-s')">small 모달</button>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 l4">
+								<div class="card">
+									<div class="card-header row">
+										<div class="content-title">케이스 대응</div>
+									</div>
+									<div class="card-body">
+										<h4>컨텐츠</h4>
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-searchTable')">세부사업 검색</button>
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-searchTree')">센터 검색</button>
+
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-list')">센터 등록</button>
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#error-log')">처리내용 상세</button>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 l4">
+								<div class="card">
+									<div class="card-header row">
+										<div class="content-title">케이스 대응</div>
+									</div>
+									<div class="card-body">
+										<h4>모달에 모달</h4>
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-in')">모달</button>
+
+										<h4>만들었는데 기획 내용이 변경되면서 사라진것, 혹시몰라서 백업해놓은 모달 </h4>
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-checkboxtree')">tree checkbox</button>
+										<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-m')">medium 모달</button>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 l4">
+							</div>
+						</div>
+
+					</section>
+				</article>
+			</div>
+		</div>
+
+		<!-- start:: modal-l large모달-->
+		<div id="modal-l" class="modal">
+			<div class="modal-content modal-l">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="content-title2">content-title</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-l')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body">
+						<div class="card infoList-card">
+							<div class="sub-title2">sub-title</div>
+							<div class="infoList">
+								<div class="m-list">
+									<div class="list-item">
+										<div class="list-item_title">item_title</div>
+										<div class="list-item_content">item_content</div>
+									</div>
+									<div class="list-item">
+										<div class="list-item_title">item_title</div>
+										<div class="list-item_content">item_content</div>
+									</div>
+									<div class="list-item">
+										<div class="list-item_title">item_title</div>
+										<div class="list-item_content">item_content</div>
+									</div>
+									<div class="list-item">
+										<div class="list-item_title">item_title</div>
+										<div class="list-item_content">item_content</div>
+									</div>
+								</div>
+								<div class="m-list">
+									<div class="list-item">
+										<div class="list-item_title">item_title</div>
+										<div class="list-item_content">item_content</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="title-row tableCaption">
+							<div class="sub-title2">sub-title</div>
+							<div class="selectinput select-S1">
+								<button class="label" id="selectFor1">2021</button>
+								<div class="optionList" style="display: none;">
+									<ul style="max-height: 150px;">
+										<li class="optionItem">2021</li>
+										<li class="optionItem">2020</li>
+										<li class="optionItem">2019</li>
+										<li class="optionItem">2018</li>
+										<li class="optionItem">2017</li>
+										<li class="optionItem">2016</li>
+										<li class="optionItem">2015</li>
+									</ul>
+								</div>
+							</div>
+							<div class="spacer"></div>
+							<button type="button" class="btn btn-s btn-round btn-bright-main nomargin"><i class="fas fa-file-alt icon-left"></i>Excel Download</button>
+						</div>
+
+						<table id="example" class=" table-S1 cell-border" style="width:100%">
+							<thead>
+								<tr role="row">
+									<th class="">no</th>
+									<th class="">이름</th>
+									<th class="">코드</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="">1</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">3</td>
+									<td class="">비즈데이터12</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">4</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg"></div>
+		</div>
+		<!-- end:: modal-l large모달-->
+
+
+		<!-- start:: modal-m medium모달-->
+		<div id="modal-m" class="modal">
+			<div class="modal-content modal-m">
+				<div class="card" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="display-title">medium-modal</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-m')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body">
+						이프로젝트에서는 medium 사이즈 모달을 사용하지 않습니다. 혹시몰라서 삭제하지않았습니다.
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg"></div>
+		</div>
+		<!-- end:: modal-m medium모달-->
+
+
+		<!-- start:: modal-s small모달-->
+		<div id="modal-s" class="modal">
+			<div class="modal-content modal-s fit">
+				<div class="card" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="content-title2">samll모달</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-s')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body">
+						<table id="example2" class="table-S1 cell-border" style="width:100%">
+							<thead>
+								<tr role="row">
+									<th class="">no</th>
+									<th class="">이름</th>
+									<th class="">코드</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="">1</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">3</td>
+									<td class="">비즈데이터12</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">4</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">3</td>
+									<td class="">비즈데이터12</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">4</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">3</td>
+									<td class="">비즈데이터12</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">4</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">3</td>
+									<td class="">비즈데이터12</td>
+									<td class="">10021</td>
+								</tr>
+								<tr>
+									<td class="">4</td>
+									<td class="">비즈데이터</td>
+									<td class="">10021</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg" onclick="Modal_h('#modal-s')"></div>
+		</div>
+		<!-- end:: modal-s small모달-->
+
+
+		<!-- start:: 세부사업 검색-->
+		<div id="modal-searchTable" class="modal">
+			<div class="modal-content modal-s">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="content-title2">세부사업 검색</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-searchTable')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body d-flex">
+						<div class="card filterCard">
+							<div class="filterCard-body">
+								<div class="input-wrap">
+									<div class="input-title">세부사업 명</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title" for="selectFor1">연도</div>
+									<div class="selectinput select-S1">
+										<button class="label" id="selectFor1">2021</button>
+										<div class="optionList" style="display: none;">
+											<ul style="max-height: 300px;">
+												<li class="optionItem">2021</li>
+												<li class="optionItem">2020</li>
+												<li class="optionItem">2019</li>
+												<li class="optionItem">2018</li>
+												<li class="optionItem">2017</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="filterCard-footer">
+								<button type="button" class="btn btn-m btn-reset">초기화</button>
+								<div class="spacer"></div>
+								<button type="button" class="btn btn-m btn-step nomargin">조회</button>
+							</div>
+						</div>
+						<div class="title-row tableCaption"><div class="sub-title">sub-title</div></div>
+						<table id="example3" class="table-S1 cell-border nowrap hover" style="width:100%">
+							<thead>
+								<tr role="row">
+									<th class="">no</th>
+									<th class="">left</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="">1</td>
+									<td class="">1</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">2</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">1</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">2</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">1</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">2</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">1</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">2</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">1</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">2</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg"></div>
+		</div>
+		<!-- end:: 세부사업 검색-->
+
+		<!-- start:: 센터 검색-->
+		<div id="modal-searchTree" class="modal">
+			<div class="modal-content modal-s">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="content-title2">센터 검색</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-searchTree')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body d-flex">
+						<div class="card filterCard">
+							<div class="filterCard-body">
+								<div class="input-wrap">
+									<div class="input-title">센터 명</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title" for="selectFor1">상태</div>
+									<div class="selectinput w-100 select-S1">
+										<button class="label" id="selectFor1">선택해주세요.</button>
+										<div class="optionList" style="display: none;">
+											<ul style="max-height: 300px;">
+												<li class="optionItem">text</li>
+												<li class="optionItem">text</li>
+												<li class="optionItem">text</li>
+												<li class="optionItem">text</li>
+												<li class="optionItem">text</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="filterCard-footer">
+								<button type="button" class="btn btn-m btn-reset">초기화</button>
+								<div class="spacer"></div>
+								<button type="button" class="btn btn-m btn-step nomargin">조회</button>
+							</div>
+						</div>
+						<div class="title-row tableCaption"><div class="sub-title">조회 결과</div></div>
+						<div class="tree">
+							<ol>
+
+								<!-- 값이 없을 때 -->
+								<li>
+									<div class="tree-text">검색된 지역본부 및 센터가 없습니다.</div>
+								</li>
+								<!-- Depth가 없는 tree : 검색결과에서 사용 -->
+								<li>
+									<div class="tree-text"><a href="#">01. 서울강원지역본부</a></div>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1"></button>
+										<a href="#">01. 서울강원지역본부</a>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1"></button>
+										<a href="#">01. 서울강원지역본부</a>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1"></button>
+										<a href="#">01. 서울강원지역본부</a>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1"></button>
+										<a href="#">01. 서울강원지역본부</a>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+									</ol>
+								</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg"></div>
+		</div>
+		<!-- end:: 센터 검색-->
+
+
+		<!-- start:: modal-list 센터등록-->
+		<div id="modal-list" class="modal">
+			<div class="modal-content modal-s">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="content-title2">센터등록</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-list')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body ">
+						<!--
+							required
+							disabled
+						 -->
+						<div class="m-list2 list-center">
+							<div class="list-item">
+								<div class="list-item_title">센터 코드</div>
+								<div class="list-item_content">022CE0</div>
+							</div>
+							<div class="list-item">
+								<div class="list-item_title required">센터명</div>
+								<div class="list-item_content">
+									<div class="textinput textinput-S1 nomargin">
+										<input type="text" placeholder="placeholder" value="머머머센터">
+									</div>
+								</div>
+							</div>
+							<div class="list-item">
+								<div class="list-item_title">지역</div>
+								<div class="list-item_content">
+									<div class="selectinput disabled w-100 select-S1">
+										<button class="label">입력해 주세요.</button>
+										<div class="optionList" style="display: none;">
+											<ul style="max-height: 300px;">
+												<li class="optionItem">서울특별시</li>
+												<li class="optionItem">인천</li>
+												<li class="optionItem">강원</li>
+												<li class="optionItem">경개도</li>
+												<li class="optionItem">충남</li>
+												<li class="optionItem">세종</li>
+												<li class="optionItem">충북</li>
+												<li class="optionItem">대전</li>
+												<li class="optionItem">경북</li>
+												<li class="optionItem">전북</li>
+												<li class="optionItem">대구</li>
+												<li class="optionItem">울산</li>
+												<li class="optionItem">경남</li>
+												<li class="optionItem">부산</li>
+												<li class="optionItem">광주</li>
+												<li class="optionItem">전남</li>
+												<li class="optionItem">제주</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="list-item">
+								<div class="list-item_title required">본부</div>
+								<div class="list-item_content">
+									<div class="textinput textinput-S1 nomargin">
+										<input type="text" placeholder="placeholder">
+									</div>
+								</div>
+							</div>
+							<div class="list-item">
+								<div class="list-item_title">수정일</div>
+								<div class="list-item_content">
+									<div class="textinput disabled textinput-S1 nomargin">
+										<input type="text" placeholder="placeholder" value="2021-11-22">
+									</div>
+								</div>
+							</div>
+							<div class="list-item">
+								<div class="list-item_title required">수정 계정</div>
+								<div class="list-item_content">
+									<div class="textinput textinput-S1 nomargin">
+										<input type="text" placeholder="placeholder">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card-footer center">
+						<button type="button" class="btn btn-ml btn-reversal-off">닫기</button>
+						<button type="button" class="btn btn-ml btn-main">등록</button>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg" onclick="Modal_h('#modal-list')"></div>
+		</div>
+		<!-- end:: modal-list 센터등록-->
+
+
+		<!-- start:: 처리내용 상세-->
+		<div id="error-log" class="modal">
+			<div class="modal-content modal-l">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="content-title2">처리내용 상세</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#error-log')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body">
+						ava.lang.Exception: No tests found matching [{ExactMatcher:fDisplayName=addSchedule], {ExactMatcher:fDisplayName=addSchedule(kr.bizdata.semas.
+						stat.batch.ScheduleManagerTest)], {LeadingIdentifierMatcher:fClassName=kr.bizdata.semas.stat.batch.ScheduleManagerTest,fLeadingIdentifier=addSch
+						edule]] from org.junit.internal.requests.ClassRequest@7d4793a8at org.junit.internal.requests.FilterRequest.getRunner(FilterRequest.java:40)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.createFilteredTest(JUnit4TestLoader.java:83)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.createTest(JUnit4TestLoader.java:74)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.loadTests(JUnit4TestLoader.java:49)at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:525)at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763)at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463)at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209)java.lang.Exception: No tests found matching [{ExactMatcher:fDisplayName=addSchedule], {ExactMatcher:fDisplayName=addSchedule(kr.bizdata.semas.
+						stat.batch.ScheduleManagerTest)], {LeadingIdentifierMatcher:fClassName=kr.bizdata.semas.stat.batch.ScheduleManagerTest,fLeadingIdentifier=addSch
+						edule]] from org.junit.internal.requests.ClassRequest@7d4793a8at org.junit.internal.requests.FilterRequest.getRunner(FilterRequest.java:40)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.createFilteredTest(JUnit4TestLoader.java:83)
+						ava.lang.Exception: No tests found matching [{ExactMatcher:fDisplayName=addSchedule], {ExactMatcher:fDisplayName=addSchedule(kr.bizdata.semas.
+						stat.batch.ScheduleManagerTest)], {LeadingIdentifierMatcher:fClassName=kr.bizdata.semas.stat.batch.ScheduleManagerTest,fLeadingIdentifier=addSch
+						edule]] from org.junit.internal.requests.ClassRequest@7d4793a8at org.junit.internal.requests.FilterRequest.getRunner(FilterRequest.java:40)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.createFilteredTest(JUnit4TestLoader.java:83)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.createTest(JUnit4TestLoader.java:74)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.loadTests(JUnit4TestLoader.java:49)at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:525)at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:763)at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:463)at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:209)java.lang.Exception: No tests found matching [{ExactMatcher:fDisplayName=addSchedule], {ExactMatcher:fDisplayName=addSchedule(kr.bizdata.semas.
+						stat.batch.ScheduleManagerTest)], {LeadingIdentifierMatcher:fClassName=kr.bizdata.semas.stat.batch.ScheduleManagerTest,fLeadingIdentifier=addSch
+						edule]] from org.junit.internal.requests.ClassRequest@7d4793a8at org.junit.internal.requests.FilterRequest.getRunner(FilterRequest.java:40)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.createFilteredTest(JUnit4TestLoader.java:83)stat.batch.ScheduleManagerTest)], {LeadingIdentif
+						ierMatcher:fClassName=kr.bizdata.semas.stat.batch.ScheduleManagerTest,fLeadingIdentifier=addSch
+						edule]] from org.junit.internal.requests.ClassRequest@7d4793a8at org.junit.internal.requests.FilterRequest.getRunner(FilterRequest.java:40)at org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader.createFilteredTest(JUnit4TestLoader.java:83)
+
+					</div>
+					<div class="card-footer center">
+						<button type="button" class="btn btn-ml w-big btn-reversal-off" onclick="Modal_h('#error-log')">닫기</button>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg"></div>
+		</div>
+		<!-- end:: 처리내용 상세-->
+
+
+		<!-- start:: modal에 modal -->
+		<div id="modal-in" class="modal">
+			<div class="modal-content modal-l">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="display-title">modal</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-in')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body">
+						<button type="button" class="btn btn-ml btn-text-off" onclick="Modal_s('#modal-in2')">medium 모달</button>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg" onclick="Modal_h('#modal-in')"></div>
+		</div>
+		<div id="modal-in2" class="modal">
+			<div class="modal-content modal-m">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="display-title">modal-modal</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-in2')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body">
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg" onclick="Modal_h('#modal-in2')"></div>
+		</div>
+
+
+		<!-- start:: 혹시모를 백업 tree-->
+		<div id="modal-checkboxtree" class="modal">
+			<div class="modal-content modal-s">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="content-title2">checkboxtree 혹시모를 백업</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-checkboxtree')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body">
+						<div class="clickinput clickinput-S2">
+							<input type="checkbox" name="treeCheckbox" id="allCheck">
+							<div for="allCheck">
+								<span class="clickmarker icon1"></span>
+								<span class="clickinput-text inh-color">Select All</span>
+
+							</div>
+						</div>
+						<div class="tree">
+							<ol>
+								<li>
+									<div class="tree-text">
+										<div class="clickinput clickinput-S1">
+											<input type="checkbox" name="treeCheckbox" id="checkbox">
+											<div for="checkbox">
+												<span class="clickmarker icon1"></span>
+												업종 확인불가
+											</div>
+										</div>
+									</div>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1">
+										</button>
+										<div class="clickinput clickinput-S1">
+											<input type="checkbox" name="treeCheckbox" id="checkbox1">
+											<div for="checkbox1">
+												<span class="clickmarker icon1"></span>
+												농업, 임업 및 어업
+											</div>
+										</div>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox1-1">
+													<div for="checkbox1-1">
+														<span class="clickmarker icon1"></span>
+														농업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox1-2">
+													<div for="checkbox1-2">
+														<span class="clickmarker icon1"></span>
+														임업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox1-3">
+													<div for="checkbox1-3">
+														<span class="clickmarker icon1"></span>
+														어업
+													</div>
+												</div>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1">
+										</button>
+										<div class="clickinput clickinput-S1">
+											<input type="checkbox" name="treeCheckbox" id="checkbox2">
+											<div for="checkbox2">
+												<span class="clickmarker icon1"></span>
+												광업
+											</div>
+										</div>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-1">
+													<div for="checkbox2-1">
+														<span class="clickmarker icon1"></span>
+														석탄, 원유 및 천연가스 광업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-2">
+													<div for="checkbox2-2">
+														<span class="clickmarker icon1"></span>
+														금속 광업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-3">
+													<div for="checkbox2-3">
+														<span class="clickmarker icon1"></span>
+														비금속광물 광업; 연료용 제외
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-4">
+													<div for="checkbox2-4">
+														<span class="clickmarker icon1"></span>
+														광업 지원 서비스업
+													</div>
+												</div>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1">
+										</button>
+										<div class="clickinput clickinput-S1">
+											<input type="checkbox" name="treeCheckbox" id="checkbox3">
+											<div for="checkbox3">
+												<span class="clickmarker icon1"></span>
+												제조업
+											</div>
+										</div>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-1">
+													<div for="checkbox3-1">
+														<span class="clickmarker icon1"></span>
+														식료품 제조업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-2">
+													<div for="checkbox3-2">
+														<span class="clickmarker icon1"></span>
+														음료 제조업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-3">
+													<div for="checkbox3-3">
+														<span class="clickmarker icon1"></span>
+														담배 제조업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-4">
+													<div for="checkbox3-4">
+														<span class="clickmarker icon1"></span>
+														섬유제품 제조업; 의복 제외
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-5">
+													<div for="checkbox3-5">
+														<span class="clickmarker icon1"></span>
+														의복, 의복 액세서리 및 모피제품 제조업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-6">
+													<div for="checkbox3-6">
+														<span class="clickmarker icon1"></span>
+														가죽, 가방 및 신발 제조업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-7">
+													<div for="checkbox3-7">
+														<span class="clickmarker icon1"></span>
+														목재 및 나무제품 제조업; 가구 제외
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-8">
+													<div for="checkbox3-8">
+														<span class="clickmarker icon1"></span>
+														펄프, 종이 및 종이제품 제조업
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox3-9">
+													<div for="checkbox3-9">
+														<span class="clickmarker icon1"></span>
+														인쇄 및 기록매체 복제업
+													</div>
+												</div>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1">
+										</button>
+										<div class="clickinput clickinput-S1">
+											<input type="checkbox" name="treeCheckbox" id="checkbox2">
+											<div for="checkbox2">
+												<span class="clickmarker icon1"></span>
+												광업
+											</div>
+										</div>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-1">
+													<div for="checkbox2-1">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-2">
+													<div for="checkbox2-2">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-3">
+													<div for="checkbox2-3">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-4">
+													<div for="checkbox2-4">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-5">
+													<div for="checkbox2-5">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-6">
+													<div for="checkbox2-6">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-7">
+													<div for="checkbox2-7">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-8">
+													<div for="checkbox2-8">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<div class="clickinput clickinput-S1">
+													<input type="checkbox" name="treeCheckbox" id="checkbox2-9">
+													<div for="checkbox2-9">
+														<span class="clickmarker icon1"></span>
+														texttexttexttexttexttexttexttext
+													</div>
+												</div>
+											</div>
+										</li>
+									</ol>
+								</li>
+							</ol>
+						</div>
+					</div>
+					<div class="card-footer">
+						<button>버튼</button>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg"></div>
+		</div>
+		<!-- end:: 혹시모를 백업-->
+		<!--
+			start:: script
+
+			body바로 위에 스크립트 태그를 몰아넣는다.
+			head와 body의 내용을 전부다 불러온 후에, 스크립트 파일을 로드
+		-->
+		<!-- jquery -->
+		<script src="./assets/plugin/jquery/jquery-3.5.1.min.js"></script>
+
+		<!-- jquery ui -->
+		<script src="./assets/plugin/jquery-ui/jquery-ui.js"></script>
+
+		<!-- datatables -->
+		<script src="./assets/plugin/datatables/datatables.min.js"></script>
+
+		<!-- main.js  -->
+		<script src="./assets/js/main.js"></script>
+
+		<script>
+
+			$(document).ready(function () {
+
+				$('#example').DataTable({
+					columnDefs: [ // columns 별 css
+						{ targets: [0], className: 'dt-body-center', "searchable": false, "orderable": false },
+						{ targets: [1], className: 'dt-body-left', defaultContent: '-' },
+						{ targets: [2], className: 'dt-body-right', defaultContent: '-' }
+					],
+
+					order: [1, 'asc'],
+
+					ordering: true,   // 정렬기능 여부
+					searching: false,  // 검색기능 여부
+					info: false,      // 정보표시 여부
+					paging: true,     // 페이징 여부
+
+					pageLength: 5,    // 한 페이지에 표시할 개수
+					lengthChange: false, // 한 페이지에 표시할 개수 설정 (10/25/50/100)
+
+
+					"language": {
+						"emptyTable": "데이터가 없어요.",
+						"lengthMenu": "페이지당 _MENU_ 개씩 보기",
+						"info": "<b>검색 결과</b> : _TOTAL_개 항목 ( page : _START_ / _END_ ) ",
+						"infoEmpty": "데이터 없음",
+						"infoFiltered": "( _MAX_건의 데이터에서 필터링됨 )",
+						"search": "",
+						"zeroRecords": "일치하는 데이터가 없어요.",
+						"loadingRecords": "로딩중...",
+						"processing": "잠시만 기다려 주세요...",
+						"paginate": {
+							previous: '<i class="fas fa-angle-left"></i>',
+							next: '<i class="fas fa-angle-right"></i>'
+						}
+					}
+				});
+
+				$('#example2').DataTable({
+					columnDefs: [ // columns 별 css
+						{ targets: [0], className: 'dt-body-center', "searchable": false, "orderable": false },
+						{ targets: [1], className: 'dt-body-left', defaultContent: '-' },
+						{ targets: [2], className: 'dt-body-right', defaultContent: '-' }
+					],
+
+					order: [1, 'asc'],
+
+					ordering: true,   // 정렬기능 여부
+					searching: false,  // 검색기능 여부
+					info: false,      // 정보표시 여부
+					paging: true,     // 페이징 여부
+
+					pageLength: 10,    // 한 페이지에 표시할 개수
+					lengthChange: false, // 한 페이지에 표시할 개수 설정 (10/25/50/100)
+
+
+					"language": {
+						"emptyTable": "데이터가 없어요.",
+						"lengthMenu": "페이지당 _MENU_ 개씩 보기",
+						"info": "<b>검색 결과</b> : _TOTAL_개 항목 ( page : _START_ / _END_ ) ",
+						"infoEmpty": "데이터 없음",
+						"infoFiltered": "( _MAX_건의 데이터에서 필터링됨 )",
+						"search": "",
+						"zeroRecords": "일치하는 데이터가 없어요.",
+						"loadingRecords": "로딩중...",
+						"processing": "잠시만 기다려 주세요...",
+						"paginate": {
+							previous: '<i class="fas fa-angle-left"></i>',
+							next: '<i class="fas fa-angle-right"></i>'
+						}
+					},
+				});
+
+				$('#example3').DataTable({
+					columnDefs: [ // columns 별 css
+						{ targets: [0], className: 'dt-body-center', defaultContent: '-' },
+						{ targets: [1], className: 'dt-body-left', defaultContent: '-' }
+					],
+
+					order: [1, 'asc'],
+
+					ordering: true,   // 정렬기능 여부
+					searching: false,  // 검색기능 여부
+					info: false,      // 정보표시 여부
+					paging: true,     // 페이징 여부
+
+					pageLength: 10,    // 한 페이지에 표시할 개수
+					lengthChange: false, // 한 페이지에 표시할 개수 설정 (10/25/50/100)
+
+
+					"language": {
+						"emptyTable": "데이터가 없어요.",
+						"lengthMenu": "페이지당 _MENU_ 개씩 보기",
+						"info": "<b>검색 결과</b> : _TOTAL_개 항목 ( page : _START_ / _END_ ) ",
+						"infoEmpty": "데이터 없음",
+						"infoFiltered": "( _MAX_건의 데이터에서 필터링됨 )",
+						"search": "",
+						"zeroRecords": "일치하는 데이터가 없어요.",
+						"loadingRecords": "로딩중...",
+						"processing": "잠시만 기다려 주세요...",
+						"paginate": {
+							previous: '<i class="fas fa-angle-left"></i>',
+							next: '<i class="fas fa-angle-right"></i>'
+						}
+					},
+				});
+
+			});
+
+
+
+		</script>
+
+	</body>
+
+</html>

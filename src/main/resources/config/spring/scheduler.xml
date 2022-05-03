@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:c="http://www.springframework.org/schema/c"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:task="http://www.springframework.org/schema/task"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/task    http://www.springframework.org/schema/task/spring-task.xsd">
+	
+	<!--
+		# 스케줄러
+		- ThreadPoolTaskScheduler 인스턴스를 생성
+		# pool-size
+		  - 스레드 풀 사이즈로, 1로 설정하면 모든 작업이 순차적으로 실행된다.
+		  - 디폴트값은 1
+	-->
+    <task:scheduler id="bzdScheduler" pool-size="1" />
+	
+	<!-- executor
+		# pool-size
+		  - 스레드 풀 사이즈로, 5-10과 같이 범위로 지정도 가능
+		  - 디폴트값은 1-Interger.MAX_VALUE
+		
+		# queue-capacity
+		  - 작업 큐의 크기로 요청받은 작업을 저장할 최대 갯수, 기본값은 Integer.MAX_VALUE
+		
+		# rejection-policy
+		  - 작업을 더 이상 받아들일 수 없을 때 처리 방법
+		  
+		  ABORT(기본값)
+		  - 작업이 추가되지 않고 RejectedExecutionException을 던지게 된다.
+		  CALLER_RUNS 
+		  - 작업을 등록하려 한 스레드에서 작업을 실행하게 함. 따라서 그 시간 동안 스레드 풀의 스레드는 큐의 작업을 처리할 시간을 가지게 된다.
+		  DISCARD 
+		  - 추가하려했던 작업을 아무 반응 없이 제거
+		  DISCARD_OLDEST 
+		  - 큐에서 가장 오래된 항목 제거 후 추가
+    <task:executor id="bzdExecutor" pool-size="1" queue-capacity="1000" rejection-policy="ABORT" />
+	-->
+	
+    <!-- 스케줄링 -->
+    <!-- <task:scheduled-tasks> 태그의 scheduler 속성은 작업을 실행할 스케줄러 빈을 설정 -->
+    <!-- <task:scheduled-tasks> 태그는 한개 이상의 <task:scheduled> 태그를 가질수있음 
+         <task:scheduled> 태그는 스케줄러를 통해서 실행될 작업을 설정.
+    -->
+    <!--
+        <task:scheduled> 태그는 작업을 언제 실행할지의 여부를 지정하기 위해서 다음 세가지 속성중 한가지를 사용
+        1. cron : cron 표현식을 이용해서 실행 시간을 표현
+        2. fixed-delay : 지정된 시간 간격으로 작업을 실행
+        3. fixed-rate : 지정한 시간 주기로 작업을 실행
+        => 위 속성을 여러개 지정할 경우 위 순서대로 우선순위 적용
+		
+    <task:scheduled-tasks scheduler="scheduler">
+        <task:scheduled ref="logCollector" method="collect" cron="*/10 * * * * *" />
+    </task:scheduled-tasks>
+     -->
+	
+</beans>

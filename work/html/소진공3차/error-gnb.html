@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<title>bizdata source</title>
+
+		<!-- favicon -->
+		<link rel="apple-touch-icon" sizes="57x57" href="./assets/images/favicon/apple-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="./assets/images/favicon/apple-icon-60x60.png">
+		<link rel="icon" type="image/png" sizes="96x96" href="./assets/images/favicon/android-icon-96x96.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon/favicon-32x32.png">
+		<link rel="shortcut icon" href="./assets/images/favicon/favicon.ico">
+		<link rel="icon" href="./assets/images/favicon/favicon.ico">
+
+		<!-- 플러그인 css -->
+		<link rel="stylesheet" href="./assets/plugin/normalize/normalize.css">
+
+		<!-- jquery-ui -->
+		<link rel="stylesheet" href="./assets/plugin/jquery-ui/jquery-ui.css">
+
+		<!-- fontawesome css -->
+		<link rel="stylesheet" href="./assets/plugin/fontawesome/css/all.min.css">
+
+		<!-- datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/datatables.css">
+		<!-- custom_datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/custom_datatables.css">
+
+		<!-- 자체 css -->
+		<link rel="stylesheet" href="./assets/css/main.css">
+
+
+		<style>
+		</style>
+	</head>
+
+	<body>
+		<div class="gnb-wrapper">
+			<header class="gnb-header fixed">
+				<a href="./main.html" class="header-logo"><img src="./assets/images/logo/semas.svg" /></a>
+				<div class="spacer"></div>
+				<div class="header-end">
+					<div class="user-info">소상공인진흥공단 머머부서 어디어디 팀 홍길동님</div>
+					<button type="button" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i>LogOut</button>
+				</div>
+			</header>
+			<div class="gnb-body">
+				<nav class="gnb-nav fixed">
+					<ul class="gnb-nav-list">
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">Dashboard</a>
+						</li>
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">지원사업현황</a>
+						</li>
+						<li class="gnb-nab-entity active">
+							<a href="#" class="menu-title">기업 마스터</a>
+						</li>
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">개인 마스터</a>
+						</li>
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">센터지원현황</a>
+						</li>
+						<li class="gnb-nab-group">
+							<a href="#" class="menu-title">Data Batch</a>
+							<ul class="gnb-nav-sub-list" style="display: none;">
+								<li><a href="#">Batch 관리</a></li>
+								<li><a href="#">Batch Jop Log</a></li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+				<article class="content-wrapper">
+					<div class="error-wrapper">
+						<div class="card-error">
+							<i class="fas fa-exclamation-circle"></i>
+							<h2>요청하신 페이지를 찾을 수 없습니다.</h2>
+							<h3>서비스 이용에 불편을 드려 죄송합니다.</h3>
+							<button type="button" class="btn error-btn">홈 화면으로 이동</button>
+						</div>
+					</div>
+				</article>
+			</div>
+		</div>
+
+
+		<!--
+			start:: script
+
+			body바로 위에 스크립트 태그를 몰아넣는다.
+			head와 body의 내용을 전부다 불러온 후에, 스크립트 파일을 로드
+		-->
+		<!-- jquery -->
+		<script src="./assets/plugin/jquery/jquery-3.5.1.min.js"></script>
+
+		<!-- jquery ui -->
+		<script src="./assets/plugin/jquery-ui/jquery-ui.js"></script>
+
+		<!-- datatables -->
+		<script src="./assets/plugin/datatables/datatables.min.js"></script>
+
+		<!-- main.js  -->
+		<script src="./assets/js/main.js"></script>
+
+		<script>
+			$(document).ready(function () {
+				$(".gnb-nab-group .menu-title").click(function () {
+					var $group = $(this.closest(".gnb-nab-group"))
+					if ($group.hasClass("active")) {
+						$group.removeClass("active").children(".gnb-nav-sub-list").slideUp();
+					} else {
+						$group.addClass("active").children(".gnb-nav-sub-list").slideDown();
+					}
+				});
+
+			})
+		</script>
+
+	</body>
+
+</html>

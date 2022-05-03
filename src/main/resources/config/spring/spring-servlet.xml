@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:c="http://www.springframework.org/schema/c"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:mvc="http://www.springframework.org/schema/mvc"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+							http://www.springframework.org/schema/mvc     http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	
+	<context:component-scan base-package="kr.bizdata.semas" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
+	<mvc:default-servlet-handler />
+	<mvc:annotation-driven />
+	
+	<!-- View Resolver -->
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver"
+			p:order="1" />
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+			p:viewClass="org.springframework.web.servlet.view.JstlView"
+			p:prefix="/WEB-INF/views"
+			p:suffix=".jsp"
+			p:order="2" />
+	
+	<!-- Excel View -->
+	<bean name="excelXlsxView" class="kr.bizdata.core.servlet.view.ExcelXlsxView" />
+	
+</beans>

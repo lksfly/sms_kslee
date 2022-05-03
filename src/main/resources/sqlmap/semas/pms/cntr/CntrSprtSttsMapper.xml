@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 센터지원현황 화면 -->
+<mapper namespace="kr.bizdata.semas.pms.cntr.mapper.CntrSprtSttsMapper">
+	
+	<!-- 지역본부별 지원건수 목록 -->
+	<select id="selectList" resultType="java.util.LinkedHashMap">
+		/* SQL ID : CntrSprtSttsMapper.selectList */
+		SELECT A.RGN_CD  /* 지역코드 */
+		     , A.RGN_NM  /* 지역명 */
+		     , IFNULL(A.CNTR_CNT, IFNULL(B.CNTR_CNT, 0)) AS CNTR_CNT  /* 센터수 */
+		     , IFNULL(B.GIVE_CNT, 0) AS GIVE_CNT  /* 지원건수 */
+		  FROM (
+		           SELECT A.RGN_CD
+		                , A.DEPT_NM AS RGN_NM
+		                , COUNT(B.DEPT_CD) AS CNTR_CNT
+		             FROM SEDA_DEPT A
+		                  INNER JOIN SEDA_DEPT B ON A.DEPT_CD = B.UP_DEPT_CD
+		            WHERE A.CNTR_TYPE_CD IN ('10')  /* 센터타입코드 (10: 지역본부) */
+		              AND A.USE_YN = 'Y'
+		              AND B.USE_YN = 'Y'
+		            GROUP BY A.RGN_CD
+		           UNION ALL
+		           SELECT 'ZZZZZZ'
+		                , '기타'
+		                , NULL
+		       ) A
+		       LEFT OUTER JOIN (
+		           SELECT IFNULL(B.RGN_CD, 'ZZZZZZ') AS RGN_CD
+		                , COUNT(DISTINCT A.SPRT_CNTR_CD) AS CNTR_CNT
+		                , COUNT(A.APLY_SN) AS GIVE_CNT
+		             FROM SPRT_BIZ_APLY A
+		                  LEFT OUTER JOIN  (
+		                      SELECT A.RGN_CD
+		                           , B.DEPT_CD AS CNTR_CD
+		                        FROM SEDA_DEPT A
+		                             INNER JOIN SEDA_DEPT B ON A.DEPT_CD = B.UP_DEPT_CD
+		                       WHERE A.CNTR_TYPE_CD IN ('10')  /* 센터타입코드 (10: 지역본부) */
+		                         AND A.USE_YN = 'Y'
+		                         AND B.USE_YN = 'Y'
+		                  ) B ON A.SPRT_CNTR_CD = B.CNTR_CD
+		            WHERE A.SLCTN_YMD BETWEEN #{param.srchStartYmd} AND #{param.srchEndYmd}
+		              AND A.APLY_STS_CD = '1'
+		            GROUP BY B.RGN_CD
+		       ) B ON A.RGN_CD = B.RGN_CD
+		 ORDER BY A.RGN_CD ASC
+	</select>
+	
+	<!-- 센터별 지원건수 목록 -->
+	<select id="selectListByRgnCd" resultType="java.util.LinkedHashMap">
+		/* SQL ID : CntrSprtSttsMapper.selectListByRgnCd */
+		SELECT A.CNTR_CD  /* 센터코드 */
+		     , A.CNTR_NM  /* 센터명 */
+		     , IFNULL(B.GIVE_CNT, 0) AS GIVE_CNT  /* 지원건수 */
+		  FROM (
+		           SELECT A.RGN_CD
+		                , B.DEPT_CD AS CNTR_CD
+		                , B.DEPT_NM AS CNTR_NM
+		             FROM SEDA_DEPT A
+		                  INNER JOIN SEDA_DEPT B ON A.DEPT_CD = B.UP_DEPT_CD
+		            WHERE A.CNTR_TYPE_CD IN ('10')  /* 센터타입코드 (10: 지역본부) */
+		              AND A.USE_YN = 'Y'
+		              AND B.USE_YN = 'Y'
+		           UNION ALL
+		           SELECT 'ZZZZZZ'
+		                , 'ZZZZZZ'
+		                , '기타'
+		       ) A
+		       LEFT OUTER JOIN (
+		           SELECT IFNULL(B.CNTR_CD, 'ZZZZZZ') AS CNTR_CD  /* 센터코드 */
+		                , IFNULL(B.CNTR_NM, '기타') AS CNTR_NM  /* 센터명 */
+		                , COUNT(A.APLY_SN) AS GIVE_CNT  /* 지원건수 */
+		             FROM SPRT_BIZ_APLY A
+		                  LEFT OUTER JOIN (
+		                      SELECT A.RGN_CD
+		                           , B.DEPT_CD AS CNTR_CD
+		                           , B.DEPT_NM AS CNTR_NM
+		                        FROM SEDA_DEPT A
+		                             INNER JOIN SEDA_DEPT B ON A.DEPT_CD = B.UP_DEPT_CD
+		                       WHERE A.CNTR_TYPE_CD IN ('10')  /* 센터타입코드 (10: 지역본부) */
+		                         AND A.USE_YN = 'Y'
+		                         AND B.USE_YN = 'Y'
+		                  ) B ON A.SPRT_CNTR_CD = B.CNTR_CD
+		            WHERE A.SLCTN_YMD BETWEEN #{param.srchStartYmd} AND #{param.srchEndYmd}
+		              AND A.APLY_STS_CD = '1'
+					<if test="!'ZZZZZZ'.equals(param.rgnCd)">
+		              AND B.RGN_CD = #{param.rgnCd}  /* 지역코드 */
+					</if><if test="'ZZZZZZ'.equals(param.rgnCd)">
+		              AND B.RGN_CD IS NULL  /* 기타 */
+					</if>
+		            GROUP BY B.CNTR_CD
+		       ) B ON A.CNTR_CD = B.CNTR_CD
+		 WHERE A.RGN_CD = #{param.rgnCd}  /* 지역코드 */
+		 ORDER BY CNTR_CD ASC
+	</select>
+	
+</mapper>

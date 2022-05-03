@@ -1,0 +1,172 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 직접대출시스템 -->
+<mapper namespace="kr.bizdata.semas.from.dln.mapper.FromDlnMapper">
+	
+	<resultMap id="FromDlnInfo" type="kr.bizdata.semas.from.dln.info.FromDlnInfo" />
+	
+	<!-- 직접대출 승인(운영) -->
+	<select id="selectList_PROD" resultMap="FromDlnInfo" fetchSize="1000">
+		/* SQL ID : FromDlnMapper.selectList_PROD */
+		WITH LEX_EXE_BAS_TB AS (
+		    SELECT A1.LN_APC_NO
+				   , MIN(B1.LN_EXE_DT) AS LN_EXE_DT
+			       , SUM(B1.LN_EXE_AMT) AS LN_EXE_AMT
+			  FROM (
+					SELECT LN_APC_NO
+		              FROM LMSUSR.TB_LEX_EXE_BAS
+		             WHERE LN_EXE_GB = '1'
+		               AND LN_EXE_DT BETWEEN TO_CHAR(#{param.startDt}, 'YYYYMMDD') AND TO_CHAR(#{param.endDt}, 'YYYYMMDD')  /* 배치쿼리일자 */
+		             GROUP BY LN_APC_NO
+	               ) A1
+	          JOIN LMSUSR.TB_LEX_EXE_BAS B1
+	            ON A1.LN_APC_NO = B1.LN_APC_NO
+	           WHERE B1.LN_EXE_GB = '1'
+	           GROUP BY A1.LN_APC_NO
+		)
+		SELECT (
+		           SELECT MAX(PLCY_FND_NM) KEEP(DENSE_RANK LAST ORDER BY STD_DT)
+		             FROM LMSSYS.TB_SYS_PLCY_FND_COD
+		            WHERE PLCY_FND_CD = B.PLCY_FND_CD
+		       )                                                          AS SPRT_BIZ_NM         /* 지원사업명 */
+		     , B.STD_YY                                                   AS SPRT_BIZ_YR         /* 지원사업연도 */
+		     , '04'                                                       AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '09'                                                       AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+		     
+             , B.APC_BRDP_CD                                              AS SPRT_CNTR_CD        /* 지원센터코드 */
+		     , '1'                                                        AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     , REGEXP_REPLACE(sfxdb.dec('normal', A.CUST_RNNO), '-', '')  AS BRNO                /* 사업자등록번호 */
+		     , REPLACE(REPLACE(A.CUST_NM, CHR(13), ''), CHR(10), '')      AS ENT_NM              /* 기업명 */
+		     , A.CRPNO                                                    AS CRNO                /* 법인등록번호 */
+		     , NULL                                                       AS BZMN_TYPE_CD        /* 사업자유형코드 (1: 법인기업, 2: 개인기업, 9: 알수없음) */
+		     , REGEXP_REPLACE(A.BIZ_ZIP, '[^[:digit:]]')                  AS ENT_ZIP             /* 기업우편번호 */
+		     , REPLACE(REPLACE(A.BIZ_ZADR, CHR(13), ''), CHR(10), '')     AS ENT_ADDR            /* 기업기본주소 */
+		     , REPLACE(REPLACE(sfxdb.dec('normal', A.BIZ_BZADR), 
+		       CHR(13), ''), CHR(10), '')                                 AS ENT_DADDR           /* 기업상세주소 */
+		     , A.OPBZ_DT                                                  AS FNDN_YMD            /* 설립일자 (YYYYMMDD포맷) */
+		     , NULL                                                       AS SLS_AMT             /* 매출액 */
+		     , B.ALWS_EMPE_CNT                                            AS FT_WRKR_CNT         /* 상시근로자수 */
+		     , A.CLBS_DT                                                  AS CLSBIZ_YMD          /* 폐업일자 (YYYYMMDD포맷) */
+		     , REGEXP_REPLACE(A.STDD_INDS_CLCD, '[^[:digit:]]')           AS KSIC_SRCH_CD        /* 표준산업분류 검색용 코드 (업종코드 또는 표준산업분류코드) (+포함됨,6자리있음) */
+		     , sfxdb.dec('normal', A.CUST_TL_ARCD) || 
+		       sfxdb.dec('normal', A.CUST_TL_TONO) || 
+               sfxdb.dec('normal', A.CUST_TL_SNO)                         AS ENT_TELNO           /* 기업전화번호 */
+		     , D.CUST_DI                                                  AS DI_VAL              /* DI값 */
+		     , REPLACE(REPLACE(A.RPSR_NM, CHR(13), ''), CHR(10), '')      AS APLCNT_NM           /* 신청자명 */
+		     , C.LN_EXE_AMT                                               AS GIVE_AMT            /* 지급금액 */
+		     , REPLACE(REPLACE(sfxdb.dec('normal', D.EML_ADR),
+		       CHR(13), ''), CHR(10), '')                                 AS APLCNT_EML          /* 신청자이메일 */
+		     , sfxdb.dec('normal', D.CUST_TL_ARCD) || 
+               sfxdb.dec('normal', D.CUST_TL_TONO) || 
+               sfxdb.dec('normal', D.CUST_TL_SNO)                         AS APLCNT_TELNO        /* 신청자전화번호 */
+		     , sfxdb.dec('normal', D.MBTL_DSCD)  || 
+               sfxdb.dec('normal', D.MBTL_TONO) || 
+               sfxdb.dec('normal', D.MBTL_SNO)                            AS APLCNT_MBNO         /* 신청자핸드폰 */
+		     , REGEXP_REPLACE(D.OOH_ZIP, '[^[:digit:]]')                  AS APLCNT_ZIP          /* 신청자우편번호 */
+		     , REPLACE(REPLACE(D.OOH_ZADR, CHR(13), ''), CHR(10), '')     AS APLCNT_ADDR         /* 신청자기본주소 */
+		     , REPLACE(REPLACE(sfxdb.dec('normal', D.OOH_BZADR), 
+		       CHR(13), ''), CHR(10), '')                                 AS APLCNT_DADDR        /* 신청자상세주소 */
+		     , NULL                                                       AS APLCNT_BRDT         /* 신청자생년월일 */
+             , NULL                                                       AS APLCNT_GNDR_CD      /* 신청자성별코드 */
+		     , D.CUST_CI                                                  AS CI_VAL              /* CI값 */
+		     , NULL                                                       AS SRC_LGN_ID          /* 출처시스템로그인ID */
+		     , B.APC_DT                                                   AS APLY_YMD            /* 신청일자 */
+		     , C.LN_EXE_DT                                                AS GIVE_YMD            /* 지급일자 */
+		     , A.RPSR_NM                                                  AS CEO_NM              /* 대표자명 */
+		     , NULL                                                       AS FNSH_YMD            /* 수료일자 */
+		     , TO_DATE(B.APC_DT, 'YYYYMMDD')                              AS SRC_REG_DT          /* 출처시스템등록일시 */
+		     , C.LN_EXE_DT                                                AS SLCTN_YMD           /* 선정일자 (지급일자) */
+		     
+		     /* 직접대출시스템 */
+		     , B.PLCY_FND_CD                                              AS PLCY_FND_CD         /* 정책자금코드 */
+		     , B.LN_APC_NO                                                AS LN_APLY_NO          /* 대출신청번호 */
+		     , sfxdb.dec('normal', D.CUST_RNNO)                           AS LN_CUST_RNNO
+		  FROM LMSSYS.TB_SYS_CUST_BAS A  /* 고객 */
+		  JOIN LMSUSR.TB_LAP_LN_APC_BAS B  /* 신청 */
+		    ON A.CUST_NO = B.APC_CUST_NO
+		  JOIN LEX_EXE_BAS_TB C
+		    ON B.LN_APC_NO = C.LN_APC_NO
+		  JOIN LMSSYS.TB_SYS_CUST_BAS D
+		    ON A.RPSR_CUST_NO = D.CUST_NO
+		 WHERE 1 = 1
+	</select>
+	
+	<!-- 직접대출 승인(개발) -->
+	<select id="selectList_DEV" resultMap="FromDlnInfo" fetchSize="1000">
+		/* SQL ID : FromDlnMapper.selectList_DEV */
+		WITH LEX_EXE_BAS_TB AS (
+		    SELECT A1.LN_APC_NO
+				   , MIN(B1.LN_EXE_DT) AS LN_EXE_DT
+			       , SUM(B1.LN_EXE_AMT) AS LN_EXE_AMT
+			  FROM (
+					SELECT LN_APC_NO
+		              FROM LMSUSR.TB_LEX_EXE_BAS
+		             WHERE LN_EXE_GB = '1'
+		               AND LN_EXE_DT BETWEEN TO_CHAR(#{param.startDt}, 'YYYYMMDD') AND TO_CHAR(#{param.endDt}, 'YYYYMMDD')  /* 배치쿼리일자 */
+		             GROUP BY LN_APC_NO
+	               ) A1
+	          JOIN LMSUSR.TB_LEX_EXE_BAS B1
+	            ON A1.LN_APC_NO = B1.LN_APC_NO
+	           WHERE B1.LN_EXE_GB = '1'
+	           GROUP BY A1.LN_APC_NO
+		)
+		SELECT (
+		           SELECT MAX(PLCY_FND_NM) KEEP(DENSE_RANK LAST ORDER BY STD_DT)
+		             FROM LMSSYS.TB_SYS_PLCY_FND_COD
+		            WHERE PLCY_FND_CD = B.PLCY_FND_CD
+		       )                                                          AS SPRT_BIZ_NM         /* 지원사업명 */
+		     , B.STD_YY                                                   AS SPRT_BIZ_YR         /* 지원사업연도 */
+		     , '04'                                                       AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '09'                                                       AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             
+		     , B.APC_BRDP_CD                                              AS SPRT_CNTR_CD        /* 지원센터코드 */
+		     , '1'                                                        AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     , REGEXP_REPLACE(A.CUST_RNNO_TX, '-', '')                    AS BRNO                /* 사업자등록번호 */
+		     , REPLACE(REPLACE(A.CUST_NM, CHR(13), ''), CHR(10), '')      AS ENT_NM              /* 기업명 */
+		     , A.CRPNO                                                    AS CRNO                /* 법인등록번호 */
+		     , NULL                                                       AS BZMN_TYPE_CD        /* 사업자유형코드 (1: 법인기업, 2: 개인기업, 9: 알수없음) */
+		     , REGEXP_REPLACE(A.BIZ_ZIP, '[^[:digit:]]')                  AS ENT_ZIP             /* 기업우편번호 */
+		     , REPLACE(REPLACE(A.BIZ_ZADR, CHR(13), ''), CHR(10), '')     AS ENT_ADDR            /* 기업기본주소 */
+		     , REPLACE(REPLACE(A.BIZ_BZADR_TX, CHR(13), ''), CHR(10), '') AS ENT_DADDR           /* 기업상세주소 */
+		     , A.OPBZ_DT                                                  AS FNDN_YMD            /* 설립일자 (YYYYMMDD포맷) */
+		     , NULL                                                       AS SLS_AMT             /* 매출액 */
+		     , B.ALWS_EMPE_CNT                                            AS FT_WRKR_CNT         /* 상시근로자수 */
+		     , A.CLBS_DT                                                  AS CLSBIZ_YMD          /* 폐업일자 (YYYYMMDD포맷) */
+		     , REGEXP_REPLACE(A.STDD_INDS_CLCD, '[^[:digit:]]')           AS KSIC_SRCH_CD        /* 표준산업분류 검색용 코드 (업종코드 또는 표준산업분류코드) (+포함됨,6자리있음) */
+		     , A.CUST_TL_ARCD_TX || A.CUST_TL_TONO_TX || A.CUST_TL_SNO_TX AS ENT_TELNO           /* 기업전화번호 */
+		     , D.CUST_DI                                                  AS DI_VAL              /* DI값 */
+		     , REPLACE(REPLACE(A.RPSR_NM, CHR(13), ''), CHR(10), '')      AS APLCNT_NM           /* 신청자명 */
+		     , C.LN_EXE_AMT                                               AS GIVE_AMT            /* 지급금액 */
+		     , REPLACE(REPLACE(D.EML_ADR_TX, CHR(13), ''), CHR(10), '')   AS APLCNT_EML          /* 신청자이메일 */
+		     , D.CUST_TL_ARCD_TX || D.CUST_TL_TONO_TX || D.CUST_TL_SNO_TX AS APLCNT_TELNO        /* 신청자전화번호 */
+		     , D.MBTL_DSCD_TX  || D.MBTL_TONO_TX || D.MBTL_SNO_TX         AS APLCNT_MBNO         /* 신청자핸드폰 */
+		     , REGEXP_REPLACE(D.OOH_ZIP, '[^[:digit:]]')                  AS APLCNT_ZIP          /* 신청자우편번호 */
+		     , REPLACE(REPLACE(D.OOH_ZADR, CHR(13), ''), CHR(10), '')     AS APLCNT_ADDR         /* 신청자기본주소 */
+		     , REPLACE(REPLACE(D.OOH_BZADR_TX, CHR(13), ''), CHR(10), '') AS APLCNT_DADDR        /* 신청자상세주소 */
+		     , NULL                                                       AS APLCNT_BRDT         /* 신청자생년월일 */
+             , NULL                                                       AS APLCNT_GNDR_CD      /* 신청자성별코드 */
+		     , D.CUST_CI                                                  AS CI_VAL              /* CI값 */
+		     , NULL                                                       AS SRC_LGN_ID          /* 출처시스템로그인ID */
+		     , B.APC_DT                                                   AS APLY_YMD            /* 신청일자 */
+		     , C.LN_EXE_DT                                                AS GIVE_YMD            /* 지급일자 */
+		     , A.RPSR_NM                                                  AS CEO_NM              /* 대표자명 */
+		     , NULL                                                       AS FNSH_YMD            /* 수료일자 */
+		     , TO_DATE(B.APC_DT, 'YYYYMMDD')                              AS SRC_REG_DT          /* 출처시스템등록일시 */
+		     , C.LN_EXE_DT                                                AS SLCTN_YMD           /* 선정일자 (지급일자) */
+		     
+		     /* 직접대출시스템 */
+		     , B.PLCY_FND_CD                                              AS PLCY_FND_CD         /* 정책자금코드 */
+		     , B.LN_APC_NO                                                AS LN_APLY_NO          /* 대출신청번호 */
+		     , D.CUST_RNNO_TX                                             AS LN_CUST_RNNO
+		  FROM LMSSYS.TB_SYS_CUST_BAS A  /* 고객 */
+		  JOIN LMSUSR.TB_LAP_LN_APC_BAS B  /* 신청 */
+		    ON A.CUST_NO = B.APC_CUST_NO
+		  JOIN LEX_EXE_BAS_TB C
+		    ON B.LN_APC_NO = C.LN_APC_NO
+		  JOIN LMSSYS.TB_SYS_CUST_BAS D
+		    ON A.RPSR_CUST_NO = D.CUST_NO
+		 WHERE 1 = 1
+	</select>
+	
+</mapper>

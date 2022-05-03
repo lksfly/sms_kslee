@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 기업마스터 화면 -->
+<mapper namespace="kr.bizdata.semas.pms.bnft.mapper.BnftBizMstrMapper">
+	
+	<!-- 기업마스터 상세 조회 -->
+	<select id="select" resultType="java.util.LinkedHashMap">
+		/* SQL ID : BnftBizMstrMapper.select */
+		SELECT CONCAT(
+		           SUBSTR(A.BRNO, 1, 3), '-', SUBSTR(A.BRNO, 4, 2), '-', SUBSTR(A.BRNO, 6, 5)
+		       )                                      AS BRNO            /* 사업자등록번호 */
+		     , IFNULL(A.ENT_NM, '알수없음')              AS ENT_NM          /* 기업명 */
+		     , CONCAT(
+		           SUBSTR(A.CRNO, 1, 6), '-', SUBSTR(A.CRNO, 7, 7)
+		       )                                      AS CRNO            /* 법인등록번호 */
+		     , A.CEO_NM                               AS CEO_NM          /* 대표자명 */
+		     , A.ZIP                                  AS ZIP             /* 우편번호 */
+		     , A.ADDR                                 AS ADDR            /* 기본주소 */
+		     , A.DADDR                                AS DADDR           /* 상세주소 */
+		     , DATE_FORMAT(A.FNDN_YMD, '%Y-%m-%d')    AS FNDN_YMD        /* 설립일자 */
+		     , DATE_FORMAT(A.CLSBIZ_YMD, '%Y-%m-%d')  AS CLSBIZ_YMD      /* 폐업일자 */
+		     , A.TELNO                                AS TELNO           /* 전화번호 */
+		     , A.KSIC_CD                              AS KSIC_CD         /* 표준산업분류코드 */
+		  FROM BNFT_BIZ A
+		 WHERE A.BRNO = #{brno}  /* 사업자등록번호 */
+	</select>
+	
+	<!-- 기업마스터 목록 조회 (전체) -->
+	<select id="selectListAll" resultType="java.util.HashMap" fetchSize="1000">
+		<include refid="sql_selectList_bind" />
+		
+		/* SQL ID : BnftBizMstrMapper.selectListAll */
+		SELECT IFNULL(A.ENT_NM, '알수없음')              AS ENT_NM          /* 기업명 */
+		     , A.CEO_NM                               AS CEO_NM          /* 대표자명 */
+		     , D2.CMN_CD_NM                           AS BZMN_TYPE_NM    /* 사업자유형명 */
+		     , CONCAT(
+		           SUBSTR(A.BRNO, 1, 3), '-', SUBSTR(A.BRNO, 4, 2), '-', SUBSTR(A.BRNO, 6, 5)
+		       )                                      AS BRNO            /* 사업자등록번호 */
+		     , CONCAT(
+		           SUBSTR(A.CRNO, 1, 6), '-', SUBSTR(A.CRNO, 7, 7)
+		       )                                      AS CRNO            /* 법인등록번호 */
+		     , A.ADDR                                 AS ADDR            /* 기본주소 */
+		     , A.DADDR                                AS DADDR           /* 상세주소 */
+		     , A.TELNO                                AS TELNO           /* 전화번호 */
+		     , DATE_FORMAT(A.FNDN_YMD, '%Y-%m-%d')    AS FNDN_YMD        /* 설립일자 */
+		     , D1.CMN_CD_NM                           AS SRC_SYS_NM      /* 출처시스템명 */
+		  FROM BNFT_BIZ A
+		       LEFT OUTER JOIN CMN_CD D1 ON D1.CMN_DIV_CD = 'SRC_SYS_CD'   AND D1.CMN_CD = A.SRC_SYS_CD  /* 출처시스템코드 */
+		       LEFT OUTER JOIN CMN_CD D2 ON D2.CMN_DIV_CD = 'BZMN_TYPE_CD' AND D2.CMN_CD = A.BZMN_TYPE_CD  /* 사업자유형코드 */
+		<include refid="sql_selectList_where" />
+		 ORDER BY ${orderBy}
+	</select>
+	
+	<!-- 기업마스터 목록 조회 (페이징) -->
+	<select id="selectListPaging" resultType="java.util.LinkedHashMap">
+		<include refid="sql_selectList_bind" />
+		
+		/* SQL ID : BnftBizMstrMapper.selectListPaging */
+		SELECT IFNULL(A.ENT_NM, '알수없음')              AS ENT_NM          /* 기업명 */
+		     , A.CEO_NM                               AS CEO_NM          /* 대표자명 */
+		     , D2.CMN_CD_NM                           AS BZMN_TYPE_NM    /* 사업자유형명 */
+		     , CONCAT(
+		           SUBSTR(A.BRNO, 1, 3), '-', SUBSTR(A.BRNO, 4, 2), '-', SUBSTR(A.BRNO, 6, 5)
+		       )                                      AS BRNO            /* 사업자등록번호 */
+		     , CONCAT(
+		           SUBSTR(A.CRNO, 1, 6), '-', SUBSTR(A.CRNO, 7, 7)
+		       )                                      AS CRNO            /* 법인등록번호 */
+		     , A.ADDR                                 AS ADDR            /* 기본주소 */
+		     , A.DADDR                                AS DADDR           /* 상세주소 */
+		     , A.TELNO                                AS TELNO           /* 전화번호 */
+		     , DATE_FORMAT(A.FNDN_YMD, '%Y-%m-%d')    AS FNDN_YMD        /* 설립일자 */
+		     , D1.CMN_CD_NM                           AS SRC_SYS_NM      /* 출처시스템명 */
+		  FROM (
+		           SELECT A.ENT_NM
+		                , A.CEO_NM
+		                , A.BZMN_TYPE_CD
+		                , A.BRNO
+		                , A.CRNO
+		                , A.ADDR
+		                , A.DADDR
+		                , A.TELNO
+		                , A.FNDN_YMD
+		                , A.SRC_SYS_CD
+		           <if test="paging.sortName == 'SRC_SYS_NM'">
+		                , D1.CMN_CD_NM AS SRC_SYS_NM  /* 출처시스템명 - 소팅용 */
+		           </if>
+		             FROM BNFT_BIZ A
+		           <if test="paging.sortName == 'SRC_SYS_NM'">
+		                  LEFT OUTER JOIN CMN_CD D1 ON D1.CMN_DIV_CD = 'SRC_SYS_CD' AND D1.CMN_CD = A.SRC_SYS_CD  /* 출처시스템코드 */
+		           </if>
+		           <include refid="sql_selectList_where" />
+		            ORDER BY ${orderBy} LIMIT #{paging.startIndex}, #{paging.rowsCnt}
+		       ) A
+		       LEFT OUTER JOIN CMN_CD D1 ON D1.CMN_DIV_CD = 'SRC_SYS_CD'   AND D1.CMN_CD = A.SRC_SYS_CD  /* 출처시스템코드 */
+		       LEFT OUTER JOIN CMN_CD D2 ON D2.CMN_DIV_CD = 'BZMN_TYPE_CD' AND D2.CMN_CD = A.BZMN_TYPE_CD  /* 사업자유형코드 */
+	</select>
+	
+	<sql id="sql_selectList_bind">
+		<choose>
+			<when test="paging.sortName == 'ENT_NM'      "><bind name="orderBy" value="'ENT_NM '       + paging.sortType" /></when>
+			<when test="paging.sortName == 'CEO_NM'      "><bind name="orderBy" value="'CEO_NM '       + paging.sortType" /></when>
+			<when test="paging.sortName == 'BZMN_TYPE_NM'"><bind name="orderBy" value="'BZMN_TYPE_CD ' + paging.sortType" /></when>
+			<when test="paging.sortName == 'BRNO'        "><bind name="orderBy" value="'BRNO '         + paging.sortType" /></when>
+			<when test="paging.sortName == 'CRNO'        "><bind name="orderBy" value="'CRNO '         + paging.sortType" /></when>
+			<when test="paging.sortName == 'ADDR'        "><bind name="orderBy" value="'ADDR '         + paging.sortType" /></when>
+			<when test="paging.sortName == 'DADDR'       "><bind name="orderBy" value="'DADDR '        + paging.sortType" /></when>
+			<when test="paging.sortName == 'TELNO'       "><bind name="orderBy" value="'TELNO '        + paging.sortType" /></when>
+			<when test="paging.sortName == 'FNDN_YMD'    "><bind name="orderBy" value="'FNDN_YMD '     + paging.sortType" /></when>
+			<when test="paging.sortName == 'SRC_SYS_NM'  "><bind name="orderBy" value="'SRC_SYS_NM '   + paging.sortType" /></when>
+			<otherwise><bind name="orderBy" value="'A.REG_DT DESC'" /></otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="sql_selectList_where">
+		<where>
+		<if test="param.BRNO != null and param.BRNO.length() > 0"><if test="param.BRNO.length() == 10">
+		   AND A.BRNO = #{param.BRNO}
+		</if><if test="param.BRNO.length() != 10">
+		   AND A.BRNO LIKE CONCAT('%', #{param.BRNO}, '%')
+		</if></if>
+		<if test="param.ENT_NM != null and param.ENT_NM.length() > 0">
+		   AND A.ENT_NM LIKE CONCAT('%', #{param.ENT_NM}, '%')
+		</if>
+		<if test="param.CEO_NM != null and param.CEO_NM.length() > 0">
+		   AND A.CEO_NM LIKE CONCAT('%', #{param.CEO_NM}, '%')
+		</if>
+		<if test="param.BZMN_TYPE_CD != null and param.BZMN_TYPE_CD.length() > 0">
+		   AND A.BZMN_TYPE_CD = #{param.BZMN_TYPE_CD}
+		</if>
+		<if test="param.SRC_SYS_CD != null and param.SRC_SYS_CD.length() > 0">
+		   AND A.SRC_SYS_CD = #{param.SRC_SYS_CD}
+		</if>
+		<if test="param.srchStartDt != null and param.srchEndDt != null">
+		   AND A.REG_DT BETWEEN #{param.srchStartDt} AND  #{param.srchEndDt}
+		</if>
+		</where>
+	</sql>
+	
+	<select id="countList" resultType="int">
+		/* SQL ID : BnftBizMstrMapper.countList */
+		SELECT COUNT(*)
+		  FROM BNFT_BIZ A
+		<include refid="sql_selectList_where" />
+	</select>
+	
+</mapper>

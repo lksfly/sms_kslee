@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 배치작업등록 -->
+<mapper namespace="kr.bizdata.semas.pms.btch.mapper.BtchJobRegMapper">
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="jobId">
+		/* SQL ID : BtchJobRegMapper.insert */
+		INSERT INTO BTCH_JOB_REG (
+		       REG_DT
+		     , REG_USER_ID
+		     , MDFCN_DT
+		     , MDFCN_USER_ID
+		     , DEL_YN
+		     , USE_YN
+		     , JOB_NM
+		     , PCKG_NM
+		     , CLS_NM
+		     , MTHD_NM
+		     , CRON_EXP
+		) VALUES (
+		       NOW()
+		     , #{regUserId}
+		     , NOW()
+		     , #{mdfcnUserId}
+		     , 'N'
+		     , #{useYn}
+		     , #{jobNm}
+		     , #{pckgNm}
+		     , #{clsNm}
+		     , #{mthdNm}
+		     , #{cronExp}
+		)
+	</insert>
+	
+	<update id="update">
+		/* SQL ID : BtchJobRegMapper.update */
+		UPDATE BTCH_JOB_REG
+		   SET MDFCN_DT      = NOW()
+		     , MDFCN_USER_ID = #{mdfcnUserId}
+		  /* , DEL_YN 생략 */
+		     , USE_YN        = #{useYn}
+		     , JOB_NM        = #{jobNm}
+		     , PCKG_NM       = #{pckgNm}
+		     , CLS_NM        = #{clsNm}
+		     , MTHD_NM       = #{mthdNm}
+		     , CRON_EXP      = #{cronExp}
+		 WHERE JOB_ID = #{jobId}
+	</update>
+	
+	<update id="delete">
+		/* SQL ID : BtchJobRegMapper.delete */
+		UPDATE BTCH_JOB_REG
+		   SET MDFCN_DT      = NOW()
+		     , MDFCN_USER_ID = #{mdfcnUserId}
+		     , DEL_YN = 'Y'
+		 WHERE JOB_ID = #{jobId}
+	</update>
+	
+	<resultMap id="BtchJobRegInfo" type="kr.bizdata.semas.pms.btch.info.BtchJobRegInfo" />
+	
+	<sql id="columns_BtchJobRegInfo">
+		       JOB_ID         /* 작업아이디 */
+		     , REG_DT         /* 등록일시 */
+		     , REG_USER_ID    /* 등록자ID */
+		     , MDFCN_DT       /* 수정일시 */
+		     , MDFCN_USER_ID  /* 수정자ID */
+		     , DEL_YN         /* 삭제여부 (Y: 삭제, N: 정상) */
+		     , USE_YN         /* 사용여부 (Y: 사용, N: 미사용) */
+		     , JOB_NM         /* 작업명 */
+		     , PCKG_NM        /* 패키지명 */
+		     , CLS_NM         /* 클래스명 */
+		     , MTHD_NM        /* 메소드명 */
+		     , CRON_EXP       /* 크론표현식 */
+	</sql>
+	
+	<select id="select" resultMap="BtchJobRegInfo">
+		/* SQL ID : BtchJobRegMapper.select */
+		SELECT <include refid="columns_BtchJobRegInfo" />
+		  FROM BTCH_JOB_REG
+		 WHERE DEL_YN = 'N'
+		   AND JOB_ID = #{jobId}  /* 작업아이디 */
+	</select>
+	
+	<select id="selectList" resultMap="BtchJobRegInfo">
+		/* SQL ID : BtchJobRegMapper.selectList */
+		SELECT <include refid="columns_BtchJobRegInfo" />
+		  FROM BTCH_JOB_REG
+		 WHERE DEL_YN = 'N'
+		<if test="param.useYn != null and param.useYn.length() > 0">
+		   AND USE_YN = #{param.useYn}
+		</if>
+		<if test="param.jobNm != null and param.jobNm.length() > 0">
+		   AND JOB_NM LIKE CONCAT('%', #{param.jobNm} ,'%')
+		</if>
+		<if test="param.clsNm != null and param.clsNm.length() > 0">
+		   AND CLS_NM LIKE CONCAT('%', #{param.clsNm} ,'%')
+		</if>
+		<if test="param.mthdNm != null and param.mthdNm.length() > 0">
+		   AND MTHD_NM LIKE CONCAT('%', #{param.mthdNm} ,'%')
+		</if>
+		 ORDER BY JOB_ID
+	</select>
+	
+</mapper>

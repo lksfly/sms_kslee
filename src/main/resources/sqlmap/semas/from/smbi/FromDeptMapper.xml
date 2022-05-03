@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 교육시스템 -->
+<mapper namespace="kr.bizdata.semas.from.smbi.mapper.FromDeptMapper">
+	
+	<resultMap id="FromDeptInfo" type="kr.bizdata.semas.from.smbi.info.FromDeptInfo" />
+	
+	<!-- 지급온라인 -->
+	<select id="selectList" resultMap="FromDeptInfo" fetchSize="1000">
+		/* SQL ID : FromDeptInfo.selectList */
+		SELECT CODE AS DEPT_CD
+    	     , PCODE AS UP_DEPT_CD
+    	     , NAME AS DEPT_NM
+    	     , CENTTYPE AS CNTR_TYPE_CD
+    	     , USE_YN AS USE_YN
+    	     , ORDSEQ AS ODR
+    	     , ZIPCODE AS ZIP
+    	     , ADDR1 AS ADDR1
+    	     , ADDR2 AS ADDR2
+    	     , PHONE AS TELNO
+    	     , FAX AS FXNO
+    	     , CENTAREA AS JRSDC_AREA
+    	     , LOCACODE AS RGN_CD
+      FROM SMBI.VT_SEDA_DEPTINFO
+	</select>
+	
+</mapper>

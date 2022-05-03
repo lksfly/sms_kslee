@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<title>bizdata source</title>
+
+		<!-- 플러그인 css -->
+		<link rel="stylesheet" href="./assets/plugin/normalize/normalize.css">
+
+		<!-- jquery-ui -->
+		<link rel="stylesheet" href="./assets/plugin/jquery-ui/jquery-ui.css">
+
+		<!-- fontawesome css -->
+		<link rel="stylesheet" href="./assets/plugin/fontawesome/css/all.min.css">
+
+		<!-- datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/datatables.css">
+		<!-- custom_datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/custom_datatables.css">
+
+		<!-- 자체 css -->
+		<link rel="stylesheet" href="./assets/css/main.css">
+
+
+		<style>
+		</style>
+	</head>
+
+	<body>
+		<div class="gnb-wrapper">
+			<header class="gnb-header fixed">
+				<a href="./main.html" class="header-logo"><img src="./assets/images/logo/semas.svg" /></a>
+				<div class="spacer"></div>
+				<div class="header-end">
+					<div class="user-info">소상공인진흥공단 머머부서 어디어디 팀 홍길동님</div>
+					<button type="button" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i>LogOut</button>
+				</div>
+			</header>
+			<div class="gnb-body">
+				<nav class="gnb-nav fixed">
+					<ul class="gnb-nav-list">
+						<li class="gnb-nab-entity">
+							<a href="./main.html" class="menu-title">main 화면</a>
+						</li>
+					</ul>
+				</nav>
+				<article class="content-wrapper">
+					<section class="container-fluid">
+						<h1 class="page-title">지원 사업 현황</h1>
+						<div class="card filterCard">
+							<div class="filterCard-body">
+								<div class="input-wrap">
+									<div class="input-title">title1</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">title2</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">title1</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">text</div>
+									<div class="inputGroup dateGroup">
+										<div class="textinput textinput-S1">
+											<div class="textinput-datepicker">
+												<input type="text" class="datepicker">
+											</div>
+											<button type="button" class="btn btn-dateReset"><i class="fas fa-times-circle"></i></button>
+										</div>
+										<div class="textinput-gap">~</div>
+										<div class="textinput textinput-S1">
+											<div class="textinput-datepicker">
+												<input type="text" class="datepicker">
+											</div>
+											<button type="button" class="btn btn-dateReset"><i class="fas fa-times-circle"></i></button>
+										</div>
+									</div>
+								</div>
+								<div class="input-wrap searchInput">
+									<div class="input-title">searchInput</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="선택해 주세요." value="값" readonly onclick="Modal_s('#modal-searchTree')">
+									</div>
+									<button class="searchButton">검색</button>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">title1</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">title2</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">title1</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">title1</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap searchInput">
+									<div class="input-title">searchInput</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="선택해 주세요." value="값" readonly onclick="Modal_s('#modal-searchTree')">
+									</div>
+									<button class="searchButton">검색</button>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">title2</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">title1</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title">date</div>
+									<div class="textinput textinput-S1">
+										<div class="textinput-datepicker">
+											<input type="text" class="datepicker">
+										</div>
+										<button type="button" class="btn btn-dateReset"><i class="fas fa-times-circle"></i></button>
+									</div>
+								</div>
+							</div>
+							<div class="filterCard-footer">
+								<button type="button" class="btn btn-m btn-reset">초기화</button>
+								<div class="spacer"></div>
+								<!-- 값이 아무것도 입력되지 않았거나, 설정된 값에 변동이 없을 때 : disabled -->
+								<button type="button" class="btn btn-m btn-step nomargin" disabled>조회</button>
+								<!-- 값에 변동이 일어났을때 : abled -->
+								<button type="button" class="btn btn-m btn-step nomargin">조회</button>
+							</div>
+						</div>
+						<h1 class="page-title">table에 들어가는 Component 모음</h1>
+						<div class="dataTables-rightCaption">
+							<div>
+								<button type="button" class="btn btn-s btn-round btn-bright-main"><i class="fas fa-file-alt icon-left"></i>Excel Download</button>
+							</div>
+						</div>
+						<table id="example" class="table-S1 cell-border nowrap hover" style="width:100%">
+							<thead>
+								<tr role="row">
+									<th class="">no</th>
+									<th class="">left</th>
+									<th class="">center</th>
+									<th class="">right</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="">1</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+								<tr>
+									<td class="">2</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+								<tr>
+									<td class="">3</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+								<tr>
+									<td class="">1</td>
+									<td class="">left</td>
+									<td class="">center</td>
+									<td class="">right</td>
+								</tr>
+							</tbody>
+						</table>
+					</section>
+				</article>
+			</div>
+		</div>
+
+
+		<!-- start:: 센터 검색-->
+		<div id="modal-searchTree" class="modal">
+			<div class="modal-content modal-s">
+				<div class="card body-scroll" style="height: 100%;">
+					<div class="card-header row">
+						<h1 class="content-title2">센터 검색</h1>
+						<div class="spacer"></div>
+						<button type="button" class="btn btn-close btn-text-main nomargin" onclick="Modal_h('#modal-searchTree')"><i class="fas fa-times"></i></button>
+					</div>
+					<div class="card-body d-flex">
+						<div class="card filterCard">
+							<div class="filterCard-body">
+								<div class="input-wrap">
+									<div class="input-title">센터 명</div>
+									<div class="textinput textinput-S1">
+										<input type="text" placeholder="입력해 주세요.">
+									</div>
+								</div>
+								<div class="input-wrap">
+									<div class="input-title" for="selectFor1">상태</div>
+									<div class="selectinput w-100 select-S1">
+										<button class="label" id="selectFor1">선택해주세요.</button>
+										<div class="optionList" style="display: none;">
+											<ul style="max-height: 300px;">
+												<li class="optionItem">text</li>
+												<li class="optionItem">text</li>
+												<li class="optionItem">text</li>
+												<li class="optionItem">text</li>
+												<li class="optionItem">text</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="filterCard-footer">
+								<button type="button" class="btn btn-m btn-reset">초기화</button>
+								<div class="spacer"></div>
+								<button type="button" class="btn btn-m btn-step nomargin">조회</button>
+							</div>
+						</div>
+						<div class="title-row tableCaption"><div class="sub-title">조회 결과</div></div>
+						<div class="tree">
+							<ol>
+								<!-- Depth가 없는 tree : 검색결과에서 사용 -->
+								<li>
+									<div class="tree-text"><a href="#">01. 서울강원지역본부</a></div>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1"></button>
+										<a href="#">01. 서울강원지역본부</a>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1"></button>
+										<a href="#">01. 서울강원지역본부</a>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1"></button>
+										<a href="#">01. 서울강원지역본부</a>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+									</ol>
+								</li>
+								<li class="show">
+									<div class="tree-text">
+										<button type="button" class="tree-toggle tree-icon1"></button>
+										<a href="#">01. 서울강원지역본부</a>
+									</div>
+									<ol class="sub-tree">
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+										<li>
+											<div class="tree-text">
+												<a href="#">01. 서울강원지역본부</a>
+											</div>
+										</li>
+									</ol>
+								</li>
+							</ol>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-bg"></div>
+		</div>
+		<!-- end:: 센터 검색-->
+
+		<!--
+			start:: script
+
+			body바로 위에 스크립트 태그를 몰아넣는다.
+			head와 body의 내용을 전부다 불러온 후에, 스크립트 파일을 로드
+		-->
+		<!-- jquery -->
+		<script src="./assets/plugin/jquery/jquery-3.5.1.min.js"></script>
+
+		<!-- jquery ui -->
+		<script src="./assets/plugin/jquery-ui/jquery-ui.js"></script>
+
+		<!-- datatables -->
+		<script src="./assets/plugin/datatables/datatables.min.js"></script>
+
+		<!-- main.js  -->
+		<script src="./assets/js/main.js"></script>
+
+		<script>
+			$(document).ready(function () {
+
+				$('#example').DataTable({
+					columnDefs: [
+						{ targets: [0], className: 'dt-body-center', "searchable": false, "orderable": false },
+						{ targets: [1], className: 'dt-body-left' },
+						{ targets: [2], className: 'dt-body-center' },
+						{ targets: [3], className: 'dt-body-right' }
+					],
+
+					order: [2, 'asc'],
+
+					ordering: true,   // 정렬기능 여부
+					searching: true,  // 검색기능 여부
+					info: true,      // 정보표시 여부
+					paging: true,     // 페이징 여부
+					"scrollX": true,
+
+					pageLength: 3,    // 한 페이지에 표시할 개수
+					lengthChange: false, // 한 페이지에 표시할 개수 설정 (10/25/50/100)
+
+					"dom": '<"caption-top"if> rt p',
+
+
+					"language": {
+						"emptyTable": "데이터가 없어요.",
+						"lengthMenu": "페이지당 _MENU_ 개씩 보기",
+						"info": "총 _MAX_개 항목 ",
+						"infoEmpty": "총 _MAX_개 항목",
+						"infoFiltered": "",
+						"search": "",
+						"searchPlaceholder": "검색어를 입력해주세요.",
+						"zeroRecords": "일치하는 데이터가 없어요.",
+						"loadingRecords": "로딩중...",
+						"processing": "잠시만 기다려 주세요...",
+						"paginate": {
+							previous: '<i class="fas fa-angle-left"></i>',
+							next: '<i class="fas fa-angle-right"></i>'
+						}
+					}
+				})
+			})
+		</script>
+
+	</body>
+
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<title>bizdata source</title>
+
+		<!-- 플러그인 css -->
+		<link rel="stylesheet" href="./assets/plugin/normalize/normalize.css">
+
+		<!-- fontawesome css -->
+		<link rel="stylesheet" href="./assets/plugin/fontawesome/css/all.min.css">
+
+		<!-- datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/datatables.css">
+		<!-- datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/custom_datatables.css">
+
+		<!-- 자체 css -->
+		<link rel="stylesheet" href="./assets/css/main.css">
+
+
+		<style>
+		</style>
+	</head>
+
+	<body>
+		<div class="gnb-wrapper">
+			<header class="gnb-header fixed">
+				<a href="./modul List.html" class="header-logo"><img src="./assets/images/logo/semas.svg" /></a>
+				<ul class="header-nav">
+					<li class="on"><a href="#">가이드</a></li>
+					<li><a href="#">레이아웃</a></li>
+					<li><a href="#">엘리먼트</a></li>
+				</ul>
+				<div class="header-end">
+					<div class="">icon</div>
+				</div>
+			</header>
+			<div class="gnb-body">
+				<nav class="gnb-nav fixed">
+					<ul class="gnb-nav-list">
+						<li class="gnb-nab-group active">
+							<a href="#" class="menu-title">basis</a>
+							<ul class="gnb-nav-sub-list">
+								<li><a href="./modul List.html">index</a></li>
+								<li><a href="./modul List.html">index</a></li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+				<article class="content-wrapper">
+					<section class="container-fluid">
+						<h1 class="page-title">modal</h1>
+						<h3>프로젝트 내부에서 사용하는 modal입니다.</h3><br>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+						<h1 class="page-title">modal</h1>
+					</section>
+				</article>
+			</div>
+		</div>
+
+		<!-- loading indicator -->
+		<div class="loadingIndicator">
+			<span class="ball"></span>
+			<span class="ball"></span>
+			<span class="ball"></span>
+		</div>
+
+		<!--
+			start:: script
+
+			body바로 위에 스크립트 태그를 몰아넣는다.
+			head와 body의 내용을 전부다 불러온 후에, 스크립트 파일을 로드
+		-->
+		<!-- jquery -->
+		<script src="./assets/plugin/jquery/jquery-3.5.1.min.js"></script>
+
+		<!-- jquery ui -->
+		<script src="./assets/plugin/jquery-ui/jquery-ui.js"></script>
+
+		<!-- datatables -->
+		<script src="./assets/plugin/datatables/datatables.min.js"></script>
+
+		<!-- main.js  -->
+		<script src="./assets/js/main.js"></script>
+
+		<script>
+
+			$(document).ready(function () {
+
+				$('#example').DataTable({
+					columnDefs: [ // columns 별 css
+						{ targets: [0], className: 'dt-body-center', "searchable": false, "orderable": false },
+						{ targets: [1], className: 'dt-body-left', defaultContent: '-' },
+						{ targets: [2], className: 'dt-body-right', defaultContent: '-' }
+					],
+
+					order: [1, 'asc'],
+
+					ordering: true,   // 정렬기능 여부
+					searching: false,  // 검색기능 여부
+					info: false,      // 정보표시 여부
+					paging: true,     // 페이징 여부
+
+					pageLength: 5,    // 한 페이지에 표시할 개수
+					lengthChange: false, // 한 페이지에 표시할 개수 설정 (10/25/50/100)
+
+
+					"language": {
+						"emptyTable": "데이터가 없어요.",
+						"lengthMenu": "페이지당 _MENU_ 개씩 보기",
+						"info": "<b>검색 결과</b> : _TOTAL_개 항목 ( page : _START_ / _END_ ) ",
+						"infoEmpty": "데이터 없음",
+						"infoFiltered": "( _MAX_건의 데이터에서 필터링됨 )",
+						"search": "",
+						"zeroRecords": "일치하는 데이터가 없어요.",
+						"loadingRecords": "로딩중...",
+						"processing": "잠시만 기다려 주세요...",
+						"paginate": {
+							previous: '<i class="fas fa-angle-left"></i>',
+							next: '<i class="fas fa-angle-right"></i>'
+						}
+					}
+				});
+
+				$('#example2').DataTable({
+					columnDefs: [ // columns 별 css
+						{ targets: [0], className: 'dt-body-center', "searchable": false, "orderable": false },
+						{ targets: [1], className: 'dt-body-left', defaultContent: '-' },
+						{ targets: [2], className: 'dt-body-right', defaultContent: '-' }
+					],
+
+					order: [1, 'asc'],
+
+					ordering: true,   // 정렬기능 여부
+					searching: false,  // 검색기능 여부
+					info: false,      // 정보표시 여부
+					paging: true,     // 페이징 여부
+
+					pageLength: 10,    // 한 페이지에 표시할 개수
+					lengthChange: false, // 한 페이지에 표시할 개수 설정 (10/25/50/100)
+
+
+					"language": {
+						"emptyTable": "데이터가 없어요.",
+						"lengthMenu": "페이지당 _MENU_ 개씩 보기",
+						"info": "<b>검색 결과</b> : _TOTAL_개 항목 ( page : _START_ / _END_ ) ",
+						"infoEmpty": "데이터 없음",
+						"infoFiltered": "( _MAX_건의 데이터에서 필터링됨 )",
+						"search": "",
+						"zeroRecords": "일치하는 데이터가 없어요.",
+						"loadingRecords": "로딩중...",
+						"processing": "잠시만 기다려 주세요...",
+						"paginate": {
+							previous: '<i class="fas fa-angle-left"></i>',
+							next: '<i class="fas fa-angle-right"></i>'
+						}
+					},
+				});
+
+				$('#example3').DataTable({
+					columnDefs: [ // columns 별 css
+						{ targets: [0], className: 'dt-body-center', defaultContent: '-' },
+						{ targets: [1], className: 'dt-body-left', defaultContent: '-' }
+					],
+
+					order: [1, 'asc'],
+
+					ordering: true,   // 정렬기능 여부
+					searching: false,  // 검색기능 여부
+					info: false,      // 정보표시 여부
+					paging: true,     // 페이징 여부
+
+					pageLength: 10,    // 한 페이지에 표시할 개수
+					lengthChange: false, // 한 페이지에 표시할 개수 설정 (10/25/50/100)
+
+
+					"language": {
+						"emptyTable": "데이터가 없어요.",
+						"lengthMenu": "페이지당 _MENU_ 개씩 보기",
+						"info": "<b>검색 결과</b> : _TOTAL_개 항목 ( page : _START_ / _END_ ) ",
+						"infoEmpty": "데이터 없음",
+						"infoFiltered": "( _MAX_건의 데이터에서 필터링됨 )",
+						"search": "",
+						"zeroRecords": "일치하는 데이터가 없어요.",
+						"loadingRecords": "로딩중...",
+						"processing": "잠시만 기다려 주세요...",
+						"paginate": {
+							previous: '<i class="fas fa-angle-left"></i>',
+							next: '<i class="fas fa-angle-right"></i>'
+						}
+					},
+				});
+
+			});
+
+
+
+		</script>
+
+	</body>
+
+</html>

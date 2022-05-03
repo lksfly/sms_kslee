@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 공통코드 -->
+<mapper namespace="kr.bizdata.semas.pms.cmn.mapper.CmnCdMapper">
+	
+	<resultMap id="CmnCdInfo" type="kr.bizdata.semas.pms.cmn.info.CmnCdInfo" />
+	
+	<sql id="columns_CmnCdInfo">
+		       CMN_DIV_CD  /* 공통구분코드 */
+		     , CMN_CD      /* 공통코드 */
+		     , CMN_CD_NM   /* 공통코드명 */
+		     , REG_DT      /* 등록일시 */
+	</sql>
+	
+	<select id="select" resultMap="CmnCdInfo">
+		/* SQL ID : CmnCdMapper.select */
+		SELECT <include refid="columns_CmnCdInfo" />
+		  FROM CMN_CD
+		 WHERE CMN_DIV_CD = #{cmnDivCd}  /* 공통구분코드 */
+		   AND CMN_CD     = #{cmnCd}     /* 공통코드 */
+	</select>
+	
+	<select id="selectList" resultMap="CmnCdInfo">
+		<choose>
+			<when test="sortName == 'code'"><bind name="orderBy" value="'CMN_CD '    + sortType" /></when>
+			<when test="sortName == 'name'"><bind name="orderBy" value="'CMN_CD_NM ' + sortType" /></when>
+			<otherwise><bind name="orderBy" value="'CMN_CD ASC'" /></otherwise>
+		</choose>
+		
+		/* SQL ID : CmnCdMapper.selectList */
+		SELECT <include refid="columns_CmnCdInfo" />
+		  FROM CMN_CD
+		 WHERE CMN_DIV_CD = #{cmnDivCd}  /* 공통구분코드 */
+		 ORDER BY ${orderBy}
+	</select>
+	
+</mapper>

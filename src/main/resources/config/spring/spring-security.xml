@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:c="http://www.springframework.org/schema/c"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:security="http://www.springframework.org/schema/security"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+	
+	<security:http pattern="/assets/**" security="none" />
+	
+	<security:http auto-config="true" use-expressions="true"
+			authentication-manager-ref="authenticationManager" entry-point-ref="restAuthenticationEntryPoint">
+		
+		<!-- URL 접근 설정 -->
+		<security:intercept-url pattern="/**/*" method="OPTIONS" access="permitAll" /> <!-- for CORS Reqeusts -->
+		
+		<security:intercept-url pattern="/index.jsp" access="permitAll" />
+		<security:intercept-url pattern="/favicon.ico" access="permitAll" />
+		
+		<security:intercept-url pattern="/login/**" access="permitAll" />
+		<security:intercept-url pattern="/logout" access="permitAll" />
+		<security:intercept-url pattern="/error/**" access="permitAll" />
+		
+		<security:intercept-url pattern="/cntr/**" access="hasAnyAuthority('AD1','AD2')" />
+		<security:intercept-url pattern="/btch/**" access="hasAnyAuthority('AD1')" />
+		
+		<security:intercept-url pattern="/**" access="authenticated" />
+		
+		<!-- 로그인 설정 : URL, 파라미터명, 핸들러 -->
+		<security:form-login
+				login-page="/login"
+				login-processing-url="/j_spring_security_login"
+				username-parameter="loginId"
+				password-parameter="loginPw"
+				authentication-success-handler-ref="restAuthenticationSuccessHandler"
+				authentication-failure-handler-ref="restAuthenticationFailureHandler" />
+		
+		<!-- 로그아웃 설정 -->
+		<security:logout logout-url="/j_spring_security_logout" logout-success-url="/" />
+		
+		<!-- CSRF 설정 -->
+		<security:csrf disabled="true"/>
+		
+		<!-- 세션 설정 -->
+		<!--
+			session-fixation-protection 속성은 로그인 시, 새 세션을 만들어 Session Fixation 공격을 막는다.
+				- migrateSession(기본값)	: 새 세션을 만들고, 기존 세션의 속성(attribute)들을 복사한다.
+				- newSession			: 새 세션을 만든다. (기존 세션의 속성들을 복사하지 않는다)
+				- none					: 기존 세션을 유지한다.
+		-->
+		<security:session-management session-fixation-protection="newSession">
+			<!--security:concurrency-control max-sessions="1" error-if-maximum-exceeded="false" /--> <!-- 동시세션 제어 기능 -->
+		</security:session-management>
+		
+	</security:http>
+	
+	<security:authentication-manager id="authenticationManager">
+		<security:authentication-provider user-service-ref="loginDetailsService">
+			<security:password-encoder ref="passwordEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+	<bean id="loginDetailsService" class="kr.bizdata.core.security.LoginDetailsService" />
+	<bean id="restAuthenticationSuccessHandler" class="kr.bizdata.core.security.LoginDetailsService$RestAuthenticationSuccessHandler" />
+	<bean id="restAuthenticationFailureHandler" class="kr.bizdata.core.security.LoginDetailsService$RestAuthenticationFailureHandler" />
+	<!-- 인증 오류 발생시 실행되는 핸들러 -->
+	<bean id="restAuthenticationEntryPoint" class="kr.bizdata.core.security.LoginDetailsService$RestAuthenticationEntryPoint" />
+	
+</beans>

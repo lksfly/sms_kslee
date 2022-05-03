@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 수혜기업기본 -->
+<mapper namespace="kr.bizdata.semas.pms.bnft.mapper.BnftDeptMapper">
+	
+	<insert id="insert">
+		/* SQL ID : BnftDeptMapper.insert */
+		INSERT INTO SEDA_DEPT (
+		       DEPT_CD        /* 부서코드  */ 
+		     , UP_DEPT_CD     /* 상위부서코드  */
+		     , DEPT_NM        /* 부서명  */
+		     , CNTR_TYPE_CD   /* 지원센터코드 */
+		     , USE_YN         /* 사용여부 */
+		     , ODR            /* 순서 */
+		     , ZIP            /* 우편번호 */
+		     , ADDR1          /* 주소1 */
+		     , ADDR2          /* 주소2 */
+		     , TELNO          /* 전화번호 */
+		     , FXNO           /* 팩스번호 */
+		     , JRSDC_AREA     /* 관할구역  */
+		     , RGN_CD         /* 지역코드  */
+		) VALUES (
+		       #{deptCd}       /* 부서코드  */    
+			 , #{upDeptCd}     /* 상위부서코드  */
+			 , #{deptNm}       /* 부서명  */      
+			 , #{cntrTypeCd}   /* 지원센터코드 */ 
+			 , #{useYn}        /* 사용여부 */     
+			 , #{odr}          /* 순서 */         
+			 , #{zip}          /* 우편번호 */     
+			 , #{addr1}        /* 주소1 */        
+			 , #{addr2}        /* 주소2 */        
+			 , #{telno}        /* 전화번호 */     
+			 , #{fxno}         /* 팩스번호 */     
+			 , #{jrsdcArea}    /* 관할구역  */    
+			 , #{rgnCd}        /* 지역코드  */    
+
+		)
+	</insert>
+	
+	<update id="update">
+		/* SQL ID : BnftDeptMapper.update */
+		UPDATE SEDA_DEPT
+		   SET UP_DEPT_CD   = #{upDeptCd}     /* 상위부서코드  */
+		     , DEPT_NM      = #{deptNm}       /* 부서명  */
+		     , CNTR_TYPE_CD = #{cntrTypeCd}   /* 지원센터코드 */
+		     , USE_YN       = #{useYn}        /* 사용여부 */
+		     , ODR          = #{odr}          /* 순서 */
+		     , ZIP          = #{zip}          /* 우편번호 */
+		     , ADDR1        = #{addr1}        /* 주소1 */
+		     , ADDR2        = #{addr2}        /* 주소2 */
+		     , TELNO        = #{telno}        /* 전화번호 */
+		     , FXNO         = #{fxno}         /* 팩스번호 */
+		     , JRSDC_AREA   = #{jrsdcArea}    /* 관할구역  */
+		     , RGN_CD       = #{rgnCd}        /* 지역코드  */
+		 WHERE DEPT_CD = #{deptCd}  /* 부서코드 */
+	</update>
+	
+	<select id="exists" resultType="boolean">
+		/* SQL ID : BnftDeptMapper.exists */
+		SELECT CASE WHEN COUNT(*) > 0 THEN '1' ELSE '0' END
+		  FROM SEDA_DEPT
+		 WHERE DEPT_CD = #{deptCd}  /* 부서코드 */
+	</select>
+	
+</mapper>

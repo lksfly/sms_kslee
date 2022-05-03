@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 개인마스터 화면 -->
+<mapper namespace="kr.bizdata.semas.pms.bnft.mapper.BnftPsnlMstrMapper">
+	
+	<!-- 개인마스터 상세 조회 (기본) -->
+	<select id="selectByDiVal" resultType="java.util.LinkedHashMap">
+		/* SQL ID : BnftPsnlMstrMapper.selectByDiVal */
+		SELECT '보유'                                  AS DI_YN_NM        /* DI 보유여부명 */
+		     , A.DI_VAL                               AS DI_VAL
+		     , NULL                                   AS PSNL_SN
+		     , IFNULL(A.PSNL_NM, '알수없음')             AS PSNL_NM         /* 개인이름 */
+		     , A.EML                                  AS EML             /* 이메일 */
+		     , cast(aes_decrypt(unhex(A.MBNO), SHA2('F@42',512))as char) AS MBNO  /* 핸드폰 (복호화) */
+		     , A.TELNO                                AS TELNO           /* 전화번호 */
+		     , A.ZIP                                  AS ZIP             /* 우편번호 */
+		     , A.ADDR                                 AS ADDR            /* 기본주소 */
+		     , A.DADDR                                AS DADDR           /* 상세주소 */
+		     , DATE_FORMAT(A.BRDT, '%Y-%m-%d')        AS BRDT            /* 생년월일 */
+		     , D2.CMN_CD_NM                           AS GNDR_NM         /* 성별 */
+		  FROM BNFT_PSNL A
+		       LEFT OUTER JOIN CMN_CD D2 ON D2.CMN_DIV_CD = 'GNDR_CD'      AND D2.CMN_CD = A.GNDR_CD  /* 성별코드 */
+		 WHERE A.DI_VAL = #{diVal}  /* DI값 */
+	</select>
+	
+	<!-- 개인마스터 상세 조회 (임시) -->
+	<select id="selectByPsnlSn" resultType="java.util.LinkedHashMap">
+		/* SQL ID : BnftPsnlMstrMapper.selectByPsnlSn */
+		SELECT '미보유'                                 AS DI_YN_NM        /* DI 보유여부명 */
+		     , NULL                                   AS DI_VAL
+		     , A.PSNL_SN                              AS PSNL_SN
+		     , IFNULL(A.PSNL_NM, '알수없음')             AS PSNL_NM         /* 개인이름 */
+		     , A.EML                                  AS EML             /* 이메일 */
+		     , cast(aes_decrypt(unhex(A.MBNO), SHA2('F@42',512))as char) AS MBNO  /* 핸드폰 (복호화) */
+		     , A.TELNO                                AS TELNO           /* 전화번호 */
+		     , A.ZIP                                  AS ZIP             /* 우편번호 */
+		     , A.ADDR                                 AS ADDR            /* 기본주소 */
+		     , A.DADDR                                AS DADDR           /* 상세주소 */
+		     , DATE_FORMAT(A.BRDT, '%Y-%m-%d')        AS BRDT            /* 생년월일 */
+		     , D2.CMN_CD_NM                           AS GNDR_NM         /* 성별 */
+		  FROM BNFT_PSNL_TEMP A
+		       LEFT OUTER JOIN CMN_CD D2 ON D2.CMN_DIV_CD = 'GNDR_CD'      AND D2.CMN_CD = A.GNDR_CD  /* 성별코드 */
+		 WHERE A.PSNL_SN = #{psnlSn}  /* 개인일련번호 */
+	</select>
+	
+	<!-- 개인마스터 목록 조회 (전체) -->
+	<select id="selectListAll" resultType="java.util.HashMap" fetchSize="1000">
+		<include refid="sql_selectList_bind" />
+		
+		/* SQL ID : BnftPsnlMstrMapper.selectListAll */
+		<if test="param.DI_YN == null or param.DI_YN == 'Y'.toString()">
+		SELECT '보유'                                  AS DI_YN_NM        /* DI 보유여부명 */
+		     , A.DI_VAL                               AS DI_VAL
+		     , NULL                                   AS PSNL_SN
+		     , IFNULL(A.PSNL_NM, '알수없음')             AS PSNL_NM         /* 개인이름 */
+		     , A.EML                                  AS EML             /* 이메일 */
+		     , A.TELNO                                AS TELNO           /* 전화번호 */
+		     , A.ZIP                                  AS ZIP             /* 우편번호 */
+		     , A.ADDR                                 AS ADDR            /* 기본주소 */
+		     , A.DADDR                                AS DADDR           /* 상세주소 */
+		     , DATE_FORMAT(A.BRDT, '%Y-%m-%d')        AS BRDT            /* 생년월일 */
+		     , D2.CMN_CD_NM                           AS GNDR_NM         /* 성별 */
+		     , A.SRC_LGN_ID                           AS SRC_LGN_ID      /* 출처시스템로그인ID */
+		     , D1.CMN_CD_NM                           AS SRC_SYS_NM      /* 출처시스템명 */
+		     , A.REG_DT
+		  FROM BNFT_PSNL A
+		       LEFT OUTER JOIN CMN_CD D1 ON D1.CMN_DIV_CD = 'SRC_SYS_CD'   AND D1.CMN_CD = A.SRC_SYS_CD  /* 출처시스템코드 */
+		       LEFT OUTER JOIN CMN_CD D2 ON D2.CMN_DIV_CD = 'GNDR_CD'      AND D2.CMN_CD = A.GNDR_CD  /* 성별코드 */
+		<include refid="sql_selectList_where" />
+		</if>
+		<if test="param.DI_YN == null">
+		UNION ALL
+		</if>
+		<if test="param.DI_YN == null or param.DI_YN == 'N'.toString()">
+		SELECT '미보유'                                 AS DI_YN_NM        /* DI 보유여부명 */
+		     , NULL                                   AS DI_VAL
+		     , A.PSNL_SN                              AS PSNL_SN
+		     , IFNULL(A.PSNL_NM, '알수없음')             AS PSNL_NM         /* 개인이름 */
+		     , A.EML                                  AS EML             /* 이메일 */
+		     , A.TELNO                                AS TELNO           /* 전화번호 */
+		     , A.ZIP                                  AS ZIP             /* 우편번호 */
+		     , A.ADDR                                 AS ADDR            /* 기본주소 */
+		     , A.DADDR                                AS DADDR           /* 상세주소 */
+		     , DATE_FORMAT(A.BRDT, '%Y-%m-%d')        AS BRDT            /* 생년월일 */
+		     , D2.CMN_CD_NM                           AS GNDR_NM         /* 성별 */
+		     , A.SRC_LGN_ID                           AS SRC_LGN_ID      /* 출처시스템로그인ID */
+		     , D1.CMN_CD_NM                           AS SRC_SYS_NM      /* 출처시스템명 */
+		     , A.REG_DT
+		  FROM BNFT_PSNL_TEMP A
+		       LEFT OUTER JOIN CMN_CD D1 ON D1.CMN_DIV_CD = 'SRC_SYS_CD'   AND D1.CMN_CD = A.SRC_SYS_CD  /* 출처시스템코드 */
+		       LEFT OUTER JOIN CMN_CD D2 ON D2.CMN_DIV_CD = 'GNDR_CD'      AND D2.CMN_CD = A.GNDR_CD  /* 성별코드 */
+		<include refid="sql_selectList_where" />
+		</if>
+		 ORDER BY ${orderBy}
+	</select>
+	
+	<!-- 개인마스터 목록 조회 (페이징) -->
+	<select id="selectListPaging" resultType="java.util.LinkedHashMap">
+		<include refid="sql_selectList_bind" />
+		
+		/* SQL ID : BnftPsnlMstrMapper.selectListPaging */
+		SELECT A.DI_YN_NM                             AS DI_YN_NM        /* DI 보유여부명 */
+		     , A.DI_VAL
+		     , A.PSNL_SN
+		     , IFNULL(A.PSNL_NM, '알수없음')             AS PSNL_NM         /* 개인이름 */
+		     , A.EML                                  AS EML             /* 이메일 */
+		     , A.TELNO                                AS TELNO           /* 전화번호 */
+		     , A.ZIP                                  AS ZIP             /* 우편번호 */
+		     , A.ADDR                                 AS ADDR            /* 기본주소 */
+		     , A.DADDR                                AS DADDR           /* 상세주소 */
+		     , DATE_FORMAT(A.BRDT, '%Y-%m-%d')        AS BRDT            /* 생년월일 */
+		     , D2.CMN_CD_NM                           AS GNDR_NM         /* 성별 */
+		     , A.SRC_LGN_ID                           AS SRC_LGN_ID      /* 출처시스템로그인ID */
+		     , D1.CMN_CD_NM                           AS SRC_SYS_NM      /* 출처시스템명 */
+		  FROM (
+				<if test="param.DI_YN == null or param.DI_YN == 'Y'.toString()">
+		           SELECT '보유'        AS DI_YN_NM        /* DI 보유여부명 */
+		                , A.DI_VAL     AS DI_VAL
+		                , NULL         AS PSNL_SN
+		                , A.PSNL_NM
+		                , A.EML
+		                , A.TELNO
+		                , A.ZIP
+		                , A.ADDR
+		                , A.DADDR
+		                , A.BRDT
+		                , A.GNDR_CD
+		                , A.SRC_LGN_ID
+		                , A.SRC_SYS_CD
+		                , A.REG_DT
+		           <if test="paging.sortName == 'SRC_SYS_NM'">
+		                , D1.CMN_CD_NM AS SRC_SYS_NM  /* 출처시스템명 - 소팅용 */
+		           </if>
+		             FROM BNFT_PSNL A
+		           <if test="paging.sortName == 'SRC_SYS_NM'">
+		                  LEFT OUTER JOIN CMN_CD D1 ON D1.CMN_DIV_CD = 'SRC_SYS_CD' AND D1.CMN_CD = A.SRC_SYS_CD  /* 출처시스템코드 */
+		           </if>
+		           <include refid="sql_selectList_where" />
+				</if>
+				<if test="param.DI_YN == null">
+		           UNION ALL
+				</if>
+				<if test="param.DI_YN == null or param.DI_YN == 'N'.toString()">
+		           SELECT '미보유'       AS DI_YN_NM        /* DI 보유여부명 */
+		                , NULL         AS DI_VAL
+		                , A.PSNL_SN    AS PSNL_SN
+		                , A.PSNL_NM
+		                , A.EML
+		                , A.TELNO
+		                , A.ZIP
+		                , A.ADDR
+		                , A.DADDR
+		                , A.BRDT
+		                , A.GNDR_CD
+		                , A.SRC_LGN_ID
+		                , A.SRC_SYS_CD
+		                , A.REG_DT
+		           <if test="paging.sortName == 'SRC_SYS_NM'">
+		                , D1.CMN_CD_NM AS SRC_SYS_NM  /* 출처시스템명 - 소팅용 */
+		           </if>
+		             FROM BNFT_PSNL_TEMP A
+		           <if test="paging.sortName == 'SRC_SYS_NM'">
+		                  LEFT OUTER JOIN CMN_CD D1 ON D1.CMN_DIV_CD = 'SRC_SYS_CD' AND D1.CMN_CD = A.SRC_SYS_CD  /* 출처시스템코드 */
+		           </if>
+		           <include refid="sql_selectList_where" />
+				</if>
+		            ORDER BY ${orderBy} LIMIT #{paging.startIndex}, #{paging.rowsCnt}
+		       ) A
+		       LEFT OUTER JOIN CMN_CD D1 ON D1.CMN_DIV_CD = 'SRC_SYS_CD'   AND D1.CMN_CD = A.SRC_SYS_CD  /* 출처시스템코드 */
+		       LEFT OUTER JOIN CMN_CD D2 ON D2.CMN_DIV_CD = 'GNDR_CD'      AND D2.CMN_CD = A.GNDR_CD  /* 성별코드 */
+	</select>
+	
+	<sql id="sql_selectList_bind">
+		<choose>
+			<when test="paging.sortName == 'DI_YN_NM'    "><bind name="orderBy" value="'DI_YN_NM '     + paging.sortType" /></when>
+			<when test="paging.sortName == 'PSNL_NM'     "><bind name="orderBy" value="'PSNL_NM '      + paging.sortType" /></when>
+			<when test="paging.sortName == 'EML'         "><bind name="orderBy" value="'EML '          + paging.sortType" /></when>
+			<when test="paging.sortName == 'TELNO'       "><bind name="orderBy" value="'TELNO '        + paging.sortType" /></when>
+			<when test="paging.sortName == 'ZIP'         "><bind name="orderBy" value="'ZIP '          + paging.sortType" /></when>
+			<when test="paging.sortName == 'ADDR'        "><bind name="orderBy" value="'ADDR '         + paging.sortType" /></when>
+			<when test="paging.sortName == 'DADDR'       "><bind name="orderBy" value="'DADDR '        + paging.sortType" /></when>
+			<when test="paging.sortName == 'BRDT'        "><bind name="orderBy" value="'BRDT '         + paging.sortType" /></when>
+			<when test="paging.sortName == 'GNDR_NM'     "><bind name="orderBy" value="'GNDR_CD '      + paging.sortType" /></when>
+			<when test="paging.sortName == 'SRC_LGN_ID'  "><bind name="orderBy" value="'SRC_LGN_ID '   + paging.sortType" /></when>
+			<when test="paging.sortName == 'SRC_SYS_NM'  "><bind name="orderBy" value="'SRC_SYS_NM '   + paging.sortType" /></when>
+			<otherwise><bind name="orderBy" value="'REG_DT DESC'" /></otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="sql_selectList_where">
+		<where>
+		<if test="param.PSNL_NM != null and param.PSNL_NM.length() > 0">
+		   AND A.PSNL_NM LIKE CONCAT('%', #{param.PSNL_NM}, '%')
+		</if>
+		<if test="param.EML != null and param.EML.length() > 0">
+		   AND A.EML LIKE CONCAT('%', #{param.EML}, '%')
+		</if>
+		<if test="param.BRDT != null and param.BRDT.length() > 0 and param.BRDT.indexOf('-') == -1">
+		   AND A.BRDT LIKE CONCAT('%', #{param.BRDT}, '%')  /* 생년월일 (-미포함) */
+		</if><if test="param.BRDT != null and param.BRDT.length() > 0 and param.BRDT.indexOf('-') > -1">
+		   AND DATE_FORMAT(A.BRDT, '%Y-%m-%d') LIKE CONCAT('%', #{param.BRDT}, '%')  /* 생년월일 (-포함) */
+		</if>
+		<if test="param.GNDR_CD != null and param.GNDR_CD.length() > 0">
+		   AND A.GNDR_CD = #{param.GNDR_CD}
+		</if>
+		<if test="param.SRC_SYS_CD != null and param.SRC_SYS_CD.length() > 0">
+		   AND A.SRC_SYS_CD = #{param.SRC_SYS_CD}
+		</if>
+		<if test="param.srchStartDt != null and param.srchEndDt != null">
+		   AND A.REG_DT BETWEEN #{param.srchStartDt} AND  #{param.srchEndDt}
+		</if>
+		</where>
+	</sql>
+	
+	<select id="countList" resultType="int">
+		/* SQL ID : BnftPsnlMstrMapper.countList */
+		SELECT COUNT(*)
+		  FROM (
+				<if test="param.DI_YN == null or param.DI_YN == 'Y'.toString()">
+		           SELECT '보유' AS DI_YN_NM
+		             FROM BNFT_PSNL A
+		           <include refid="sql_selectList_where" />
+				</if>
+				<if test="param.DI_YN == null">
+		           UNION ALL
+				</if>
+				<if test="param.DI_YN == null or param.DI_YN == 'N'.toString()">
+		           SELECT '미보유' AS DI_YN_NM
+		             FROM BNFT_PSNL_TEMP A
+		           <include refid="sql_selectList_where" />
+				</if>
+		       ) A
+	</select>
+	
+</mapper>

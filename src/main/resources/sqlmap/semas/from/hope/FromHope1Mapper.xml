@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 희망리턴패키지시스템 (컨설팅) -->
+<mapper namespace="kr.bizdata.semas.from.hope.mapper.FromHope1Mapper">
+	
+	<resultMap id="FromHope1Info" type="kr.bizdata.semas.from.hope.info.FromHope1Info" />
+	
+	<!-- 사업정리 승인 -->
+	<select id="selectList_1" resultMap="FromHope1Info" fetchSize="1000">
+		/* SQL ID : FromHope1Mapper.selectList_1 */
+		WITH CT_PYMNT_TB AS (
+		    SELECT A.CNSL_REQST_NO
+				 , SUM(B.PYMNT_AMOUNT) AS PYMNT_AMOUNT
+			     , MIN(B.PYMNT_DE) AS RL_PYMNT_DE
+			  FROM (
+					SELECT CNSL_REQST_NO
+					  FROM HOPECON2.TB_CNSTNT_CT_PYMNT
+					 WHERE CT_PYMNT_STTUS_CODE = '2'
+					   AND PYMNT_DE BETWEEN TO_CHAR(#{param.startDt}, 'YYYYMMDD') AND TO_CHAR(#{param.endDt}, 'YYYYMMDD')  /* 배치쿼리일자 */
+					 GROUP BY CNSL_REQST_NO
+				   )A
+			  JOIN HOPECON2.TB_CNSTNT_CT_PYMNT B
+			    ON A.CNSL_REQST_NO = B.CNSL_REQST_NO
+			   GROUP BY A.CNSL_REQST_NO
+		)
+		SELECT C.BSNS_NM                                   AS SPRT_BIZ_NM         /* 지원사업명 */
+		     , C.BSNS_YEAR                                 AS SPRT_BIZ_YR         /* 지원사업연도 */
+		     , '03'                                        AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '03'                                        AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             
+		     , A.CNTER_ID_2                                AS SPRT_CNTR_CD        /* 지원센터코드 */
+		     , '1'                                         AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     , CASE WHEN LENGTH(REGEXP_REPLACE(B.BIZRNO, '-', '')) = 10 THEN REGEXP_REPLACE(B.BIZRNO, '-', '')
+		            ELSE NULL END                          AS BRNO                /* 사업자등록번호 (-포함,10자리미만존재) */
+		     , ENTRPS_NM                                   AS ENT_NM              /* 기업명 */
+		     , NULL                                        AS CRNO                /* 법인등록번호 */
+		     , CASE WHEN B.BIZRNO IS NULL OR LENGTH(REGEXP_REPLACE(B.BIZRNO, '-', '')) != 10 THEN '9'
+		            WHEN SUBSTR(REGEXP_REPLACE(B.BIZRNO, '-', ''), 4, 2) IN ('81', '82', '83', '84', '85', '86', '87', '88') THEN '1'
+		            ELSE '2' END                           AS BZMN_TYPE_CD        /* 사업자유형코드 (1: 법인기업, 2: 개인기업, 9: 알수없음) */
+		     , REGEXP_REPLACE(B.CMPNY_ZIP, '[^[:digit:]]') AS ENT_ZIP             /* 기업우편번호 (공백존재) */
+		     , B.BPLC_ADRES                                AS ENT_ADDR            /* 기업기본주소 */
+		     , B.BPLC_DETAIL_ADRES                         AS ENT_DADDR           /* 기업상세주소 */
+		     , CASE WHEN LENGTH(B.BSNS_BEGIN_DE) = 8 THEN B.BSNS_BEGIN_DE
+		            ELSE NULL END                          AS FNDN_YMD            /* 설립일자 (8자리가 아닌 데이터 존재) */
+		     , B.SELNG_AMOUNT_BEFORE_YEAR                  AS SLS_AMT             /* 매출액 */
+		     , NULL                                        AS FT_WRKR_CNT         /* 상시근로자수 */
+		     , B.CLSBIZ_DE                                 AS CLSBIZ_YMD          /* 폐업일자 (YYYYMMDD포맷, 위배없음) */
+		     , SUBSTR(B.BSNS_ITM_CODE, 2, 5)               AS KSIC_SRCH_CD        /* 표준산업분류 검색용 코드 (업종코드 또는 표준산업분류코드) */
+		     , B.BPLC_TELNO                                AS ENT_TELNO           /* 기업전화번호 */
+		     , A.DPLCT_SBSCRB_CNFIRM_INFO                  AS DI_VAL              /* DI값 */
+		     , E.MEMNM                                     AS APLCNT_NM           /* 신청자명 */
+		     , E.PYMNT_AMOUNT                              AS GIVE_AMT            /* 지급금액 */
+		     , A.EMAIL                                     AS APLCNT_EML          /* 신청자이메일 */
+		     , A.TELNO                                     AS APLCNT_TELNO        /* 신청자전화번호 */
+		     , crypto_semas.DEC(A.MBTLNUM,	'F@42')        AS APLCNT_MBNO         /* 신청자핸드폰 (복호화) */
+		     , REGEXP_REPLACE(A.ZIP, '[^[:digit:]]')       AS APLCNT_ZIP          /* 신청자우편번호 (공백만존재) */
+		     , A.ADRES                                     AS APLCNT_ADDR         /* 신청자기본주소 */
+		     , A.DETAIL_ADRES                              AS APLCNT_DADDR        /* 신청자상세주소 */
+		     , TO_CHAR(A.BRTHDY, 'YYYYMMDD')               AS APLCNT_BRDT         /* 신청자생년월일 (DATETIME형식) */
+		     , CASE WHEN SEXDSTN = '1' THEN '1'
+		            WHEN SEXDSTN = '2' THEN '2'
+		            ELSE '9' END                           AS APLCNT_GNDR_CD      /* 신청자성별코드 */
+		     , A.CISCRHASH                                 AS CI_VAL              /* CI값 */
+		     , E.LOGINID                                   AS SRC_LGN_ID          /* 출처시스템로그인ID */
+		     , TO_CHAR(A.REG_DT, 'YYYYMMDD')               AS APLY_YMD            /* 신청일자 */
+		     , E.RL_PYMNT_DE                               AS GIVE_YMD            /* 지급일자 (위배없음) */
+		     , NULL                                        AS CEO_NM              /* 대표자명 */
+		     , NULL                                        AS FNSH_YMD            /* 수료일자 */
+		     , A.REG_DT                                    AS SRC_REG_DT          /* 출처시스템등록일시 */
+		     , E.RL_PYMNT_DE                               AS SLCTN_YMD           /* 선정일자 (지급일자) */
+		     
+		     /* 희망리턴패키지시스템 (컨설팅) */
+		     , C.BSNS_NO                                   AS HOPE_SPRT_BIZNO     /* 희망리턴지원사업번호 */
+		     , A.CNSL_REQST_NO                             AS HOPE_CNSLT_APLY_NO  /* 희망리턴컨설팅신청번호 */
+		  FROM HOPECON2.TB_CNSL_REQST A  /* 컨설팅신청 */
+		       JOIN HOPECON2.TB_REQST_BSNES B  /* 공통신청사업체 */
+		         ON A.CNSL_REQST_NO = B.REQST_NO
+		       JOIN HOPECON2.TB_BSNS C  /* 사업기본 */
+		         ON A.BSNS_NO = C.BSNS_NO
+		       JOIN CT_PYMNT_TB E
+		         ON A.CNSL_REQST_NO = E.CNSL_REQST_NO
+		       LEFT OUTER JOIN SEDA.MEM_PUB_INFO E  /* 회원마스터 */
+		         ON A.REQST_USER_ID = E.MEMID
+		 WHERE CNSL_STTUS_CODE NOT IN ('Z_REQT_CAN', 'Z_LACU_CAN', 'Z_AUTO_CAN')
+		   AND STOR_REMVL_AT = 'N'
+	</select>
+	
+	<!-- 사업정리 취소 -->
+	<select id="selectList_2" resultMap="FromHope1Info" fetchSize="1000">
+		/* SQL ID : FromHope1Mapper.selectList_2 */
+		SELECT '03'                                        AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '03'                                        AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             , '2'                                         AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     /* 희망리턴패키지시스템 (컨설팅) */
+		     , A.CNSL_REQST_NO                             AS HOPE_CNSLT_APLY_NO  /* 희망리턴컨설팅신청번호 */
+		  FROM HOPECON2.TB_CNSL_REQST A  /* 컨설팅신청 */
+		 WHERE CNSL_STTUS_CODE IN ('Z_REQT_CAN', 'Z_LACU_CAN', 'Z_AUTO_CAN')
+		   AND STOR_REMVL_AT = 'N'
+		   AND A.UPD_DT BETWEEN #{param.startDt} AND #{param.endDt}  /* 배치쿼리일자 */
+	</select>
+	
+	<!-- 점포철거 승인 -->
+	<select id="selectList_3" resultMap="FromHope1Info" fetchSize="1000">
+		/* SQL ID : FromHope1Mapper.selectList_3 */
+		SELECT C.BSNS_NM                                   AS SPRT_BIZ_NM         /* 지원사업명 */
+		     , C.BSNS_YEAR                                 AS SPRT_BIZ_YR         /* 지원사업연도 */
+		     , '03'                                        AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '04'                                        AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             
+		     , A.CNTER_ID_2                                AS SPRT_CNTR_CD        /* 지원센터코드 */
+		     , '1'                                         AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     , CASE WHEN LENGTH(REGEXP_REPLACE(B.BIZRNO, '-', '')) = 10 THEN REGEXP_REPLACE(B.BIZRNO, '-', '')
+		            ELSE NULL END                          AS BRNO                /* 사업자등록번호 (-포함,10자리미만존재) */
+		     , ENTRPS_NM                                   AS ENT_NM              /* 기업명 */
+		     , NULL                                        AS CRNO                /* 법인등록번호 */
+		     , CASE WHEN B.BIZRNO IS NULL OR LENGTH(REGEXP_REPLACE(B.BIZRNO, '-', '')) != 10 THEN '9'
+		            WHEN SUBSTR(REGEXP_REPLACE(B.BIZRNO, '-', ''), 4, 2) IN ('81', '82', '83', '84', '85', '86', '87', '88') THEN '1'
+		            ELSE '2' END                           AS BZMN_TYPE_CD        /* 사업자유형코드 (1: 법인기업, 2: 개인기업, 9: 알수없음) */
+		     , REGEXP_REPLACE(B.CMPNY_ZIP, '[^[:digit:]]') AS ENT_ZIP             /* 기업우편번호 (공백존재) */
+		     , B.BPLC_ADRES                                AS ENT_ADDR            /* 기업기본주소 */
+		     , B.BPLC_DETAIL_ADRES                         AS ENT_DADDR           /* 기업상세주소 */
+		     , CASE WHEN LENGTH(B.BSNS_BEGIN_DE) = 8 THEN B.BSNS_BEGIN_DE
+		            ELSE NULL END                          AS FNDN_YMD            /* 설립일자 (8자리가 아닌 데이터 존재) */
+		     , B.SELNG_AMOUNT_BEFORE_YEAR                  AS SLS_AMT             /* 매출액 */
+		     , NULL                                        AS FT_WRKR_CNT         /* 상시근로자수 */
+		     , B.CLSBIZ_DE                                 AS CLSBIZ_YMD          /* 폐업일자 (YYYYMMDD포맷, 위배없음) */
+		     , SUBSTR(B.BSNS_ITM_CODE, 2, 5)               AS KSIC_SRCH_CD        /* 표준산업분류 검색용 코드 (업종코드 또는 표준산업분류코드) */
+		     , B.BPLC_TELNO                                AS ENT_TELNO           /* 기업전화번호 */
+		     , A.DPLCT_SBSCRB_CNFIRM_INFO                  AS DI_VAL              /* DI값 */
+		     , E.MEMNM                                     AS APLCNT_NM           /* 신청자명 */
+		     , D.PYMNT_AMOUNT                              AS GIVE_AMT            /* 지급금액 */
+		     , A.EMAIL                                     AS APLCNT_EML          /* 신청자이메일 */
+		     , A.TELNO                                     AS APLCNT_TELNO        /* 신청자전화번호 */
+		     , crypto_semas.DEC(A.MBTLNUM,	'F@42')        AS APLCNT_MBNO         /* 신청자핸드폰 (복호화) */
+		     , REGEXP_REPLACE(A.ZIP, '[^[:digit:]]')       AS APLCNT_ZIP          /* 신청자우편번호 (공백만존재) */
+		     , A.ADRES                                     AS APLCNT_ADDR         /* 신청자기본주소 */
+		     , A.DETAIL_ADRES                              AS APLCNT_DADDR        /* 신청자상세주소 */
+		     , TO_CHAR(A.BRTHDY, 'YYYYMMDD')               AS APLCNT_BRDT         /* 신청자생년월일 (DATETIME형식) */
+		     , CASE WHEN SEXDSTN = '1' THEN '1'
+		            WHEN SEXDSTN = '2' THEN '2'
+		            ELSE '9' END                           AS APLCNT_GNDR_CD      /* 신청자성별코드 */
+		     , A.CISCRHASH                                 AS CI_VAL              /* CI값 */
+		     , E.LOGINID                                   AS SRC_LGN_ID          /* 출처시스템로그인ID */
+		     , TO_CHAR(A.REG_DT, 'YYYYMMDD')               AS APLY_YMD            /* 신청일자 */
+		     , NULL                                        AS GIVE_YMD            /* 지급일자 (위배없음) */
+		     , NULL                                        AS CEO_NM              /* 대표자명 */
+		     , NULL                                        AS FNSH_YMD            /* 수료일자 (넣을지말지 고려) */
+		     , A.REG_DT                                    AS SRC_REG_DT          /* 출처시스템등록일시 */
+		     , TO_CHAR(A.REG_DT, 'YYYYMMDD')               AS SLCTN_YMD           /* 선정일자 (지급일자) */
+		     
+		     /* 희망리턴패키지시스템 (컨설팅) */
+		     , C.BSNS_NO                                   AS HOPE_SPRT_BIZNO     /* 희망리턴지원사업번호 */
+		     , A.CNSL_REQST_NO                             AS HOPE_CNSLT_APLY_NO  /* 희망리턴컨설팅신청번호 */
+		  FROM HOPECON2.TB_CNSL_REQST A  /* 컨설팅신청 */
+		       JOIN HOPECON2.TB_REQST_BSNES B  /* 공통신청사업체 */
+		         ON A.CNSL_REQST_NO = B.REQST_NO
+		       JOIN HOPECON2.TB_BSNS C  /* 사업기본 */
+		         ON A.BSNS_NO = C.BSNS_NO
+		       JOIN HOPECON2.TB_CNSL_EXCUTCT_REQPAYMT D  /* 지급 */
+		         ON A.CNSL_REQST_NO = D.CNSL_REQST_NO
+		       LEFT OUTER JOIN SEDA.MEM_PUB_INFO E
+		         ON A.REQST_USER_ID = E.MEMID
+		 WHERE CNSL_STTUS_CODE NOT IN ('Z_REQT_CAN', 'Z_LACU_CAN', 'Z_AUTO_CAN')
+		   AND STOR_REMVL_AT = 'Y'
+		   AND D.EXECUT_COMPT_DE IS NOT NULL
+		   AND D.PYMNT_AMOUNT IS NOT NULL
+		   AND A.UPD_DT BETWEEN #{param.startDt} AND #{param.endDt}  /* 배치쿼리일자 */
+	</select>
+	
+	<!-- 점포철거 취소 -->
+	<select id="selectList_4" resultMap="FromHope1Info" fetchSize="1000">
+		/* SQL ID : FromHope1Mapper.selectList_4 */
+		SELECT '03'                                        AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '04'                                        AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             , '2'                                         AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     /* 희망리턴패키지시스템 (컨설팅) */
+		     , A.CNSL_REQST_NO                             AS HOPE_CNSLT_APLY_NO  /* 희망리턴컨설팅신청번호 */
+		  FROM HOPECON2.TB_CNSL_REQST A  /* 컨설팅신청 */
+		 WHERE CNSL_STTUS_CODE IN ('Z_REQT_CAN', 'Z_LACU_CAN', 'Z_AUTO_CAN')
+		   AND STOR_REMVL_AT = 'Y'
+		   AND A.UPD_DT BETWEEN #{param.startDt} AND #{param.endDt}  /* 배치쿼리일자 */
+	</select>
+	
+	<!-- 법률자문 승인 -->
+	<select id="selectList_5" resultMap="FromHope1Info" fetchSize="1000">
+		/* SQL ID : FromHope1Mapper.selectList_5 */
+		SELECT C.BSNS_NM                                   AS SPRT_BIZ_NM         /* 지원사업명 */
+		     , C.BSNS_YEAR                                 AS SPRT_BIZ_YR         /* 지원사업연도 */
+		     , '03'                                        AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '05'                                        AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             
+		     , A.CNTER_ID_2                                AS SPRT_CNTR_CD        /* 지원센터코드 */
+		     , '1'                                         AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     , CASE WHEN LENGTH(REGEXP_REPLACE(B.BIZRNO, '-', '')) = 10 THEN REGEXP_REPLACE(B.BIZRNO, '-', '')
+		            ELSE NULL END                          AS BRNO                /* 사업자등록번호 (-포함,10자리미만존재) */
+		     , ENTRPS_NM                                   AS ENT_NM              /* 기업명 */
+		     , NULL                                        AS CRNO                /* 법인등록번호 */
+		     , CASE WHEN B.BIZRNO IS NULL OR LENGTH(REGEXP_REPLACE(B.BIZRNO, '-', '')) != 10 THEN '9'
+		            WHEN SUBSTR(REGEXP_REPLACE(B.BIZRNO, '-', ''), 4, 2) IN ('81', '82', '83', '84', '85', '86', '87', '88') THEN '1'
+		            ELSE '2' END                           AS BZMN_TYPE_CD        /* 사업자유형코드 (1: 법인기업, 2: 개인기업, 9: 알수없음) */
+		     , REGEXP_REPLACE(B.CMPNY_ZIP, '[^[:digit:]]') AS ENT_ZIP             /* 기업우편번호 (공백존재) */
+		     , B.BPLC_ADRES                                AS ENT_ADDR            /* 기업기본주소 */
+		     , B.BPLC_DETAIL_ADRES                         AS ENT_DADDR           /* 기업상세주소 */
+		     , CASE WHEN LENGTH(B.BSNS_BEGIN_DE) = 8 THEN B.BSNS_BEGIN_DE
+		            ELSE NULL END                          AS FNDN_YMD            /* 설립일자 (8자리가 아닌 데이터 존재) */
+		     , B.SELNG_AMOUNT_BEFORE_YEAR                  AS SLS_AMT             /* 매출액 */
+		     , NULL                                        AS FT_WRKR_CNT         /* 상시근로자수 */
+		     , B.CLSBIZ_DE                                 AS CLSBIZ_YMD          /* 폐업일자 (YYYYMMDD포맷, 위배없음) */
+		     , SUBSTR(B.BSNS_ITM_CODE, 2, 5)               AS KSIC_SRCH_CD        /* 표준산업분류 검색용 코드 (업종코드 또는 표준산업분류코드) */
+		     , B.BPLC_TELNO                                AS ENT_TELNO           /* 기업전화번호 */
+		     , A.DPLCT_SBSCRB_CNFIRM_INFO                  AS DI_VAL              /* DI값 */
+		     , D.MEMNM                                     AS APLCNT_NM           /* 신청자명 */
+		     , NULL                                        AS GIVE_AMT            /* 지급금액 */
+		     , A.EMAIL                                     AS APLCNT_EML          /* 신청자이메일 */
+		     , A.TELNO                                     AS APLCNT_TELNO        /* 신청자전화번호 */
+		     , crypto_semas.DEC(A.MBTLNUM,	'F@42')        AS APLCNT_MBNO         /* 신청자핸드폰 (복호화) */
+		     , REGEXP_REPLACE(A.ZIP, '[^[:digit:]]')       AS APLCNT_ZIP          /* 신청자우편번호 (공백만존재) */
+		     , A.ADRES                                     AS APLCNT_ADDR         /* 신청자기본주소 */
+		     , A.DETAIL_ADRES                              AS APLCNT_DADDR        /* 신청자상세주소 */
+		     , TO_CHAR(A.BRTHDY, 'YYYYMMDD')               AS APLCNT_BRDT         /* 신청자생년월일 (DATETIME형식) */
+		     , CASE WHEN SEXDSTN = '1' THEN '1'
+		            WHEN SEXDSTN = '2' THEN '2'
+		            ELSE '9' END                           AS APLCNT_GNDR_CD      /* 신청자성별코드 */
+		     , A.CISCRHASH                                 AS CI_VAL              /* CI값 */
+		     , D.LOGINID                                   AS SRC_LGN_ID          /* 출처시스템로그인ID */
+		     , TO_CHAR(A.REG_DT, 'YYYYMMDD')               AS APLY_YMD            /* 신청일자 */
+		     , NULL                                        AS GIVE_YMD            /* 지급일자 */
+		     , NULL                                        AS CEO_NM              /* 대표자명 */
+		     , NULL                                        AS FNSH_YMD            /* 수료일자 */
+		     , A.REG_DT                                    AS SRC_REG_DT          /* 출처시스템등록일시 */
+		     , TO_CHAR(A.REG_DT, 'YYYYMMDD')               AS SLCTN_YMD           /* 선정일자 (신청일자) */
+		     
+		     /* 희망리턴패키지시스템 (컨설팅) */
+		     , C.BSNS_NO                                   AS HOPE_SPRT_BIZNO     /* 희망리턴지원사업번호 */
+		     , A.LAW_REQST_NO                              AS HOPE_CNSLT_APLY_NO  /* 희망리턴컨설팅신청번호 */
+		  FROM HOPECON2.TB_LAW_REQST A  /* 법률자문신청 */
+		       JOIN HOPECON2.TB_REQST_BSNES B  /* 공통신청사업체 */
+		         ON A.LAW_REQST_NO = B.REQST_NO
+		       JOIN HOPECON2.TB_BSNS C  /* 사업기본 */
+		         ON A.BSNS_NO = C.BSNS_NO
+		       LEFT OUTER JOIN SEDA.MEM_PUB_INFO D
+		         ON A.REQST_USER_ID = D.MEMID
+		 WHERE LAW_STTUS_CODE NOT IN ('A_REQT_CAN')
+		   AND A.UPD_DT BETWEEN #{param.startDt} AND #{param.endDt}  /* 배치쿼리일자 */
+	</select>
+	
+	<!-- 법률자문 취소 -->
+	<select id="selectList_6" resultMap="FromHope1Info" fetchSize="1000">
+		/* SQL ID : FromHope1Mapper.selectList_6 */
+		SELECT '03'                                        AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '05'                                        AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+		     , '2'                                         AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     /* 희망리턴패키지시스템 (컨설팅) */
+		     , A.LAW_REQST_NO                              AS HOPE_CNSLT_APLY_NO  /* 희망리턴컨설팅신청번호 */
+		  FROM HOPECON2.TB_LAW_REQST A  /* 법률자문신청 */     
+		 WHERE LAW_STTUS_CODE = 'A_REQT_CAN'
+		   AND A.UPD_DT BETWEEN #{param.startDt} AND #{param.endDt}  /* 배치쿼리일자 */
+	</select>
+	
+</mapper>

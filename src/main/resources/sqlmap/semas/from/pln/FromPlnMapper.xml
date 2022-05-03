@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 대리대출시스템 -->
+<mapper namespace="kr.bizdata.semas.from.pln.mapper.FromPlnMapper">
+	
+	<resultMap id="FromPlnInfo" type="kr.bizdata.semas.from.pln.info.FromPlnInfo" />
+	
+	<!-- 대리대출 승인(운영) -->
+	<select id="selectList_PROD" resultMap="FromPlnInfo" fetchSize="1000">
+		/* SQL ID : FromPlnMapper.selectList_PROD */
+		WITH LENDBSC_MAS_TB AS (
+			SELECT  A1.BIZNO
+			      , A1.CNFR_ISS_NO
+			      , MIN(LEND_CNFM_DT) AS LEND_CNFM_DT
+		          , SUM(LEND_CNFM_AMT) AS LEND_CNFM_AMT
+			  FROM (
+					  SELECT BIZNO
+					     , CNFR_ISS_NO
+		              FROM LNDB.LN_LENDBSC_MAS
+		             WHERE LEND_CNFM_AMT IS NOT NULL
+		               AND LEND_CNFM_DT BETWEEN TO_CHAR(#{param.startDt}, 'YYYYMMDD') AND TO_CHAR(#{param.endDt}, 'YYYYMMDD')  /* 배치쿼리일자 */
+		             GROUP BY BIZNO, CNFR_ISS_NO
+			  		) A1
+			  JOIN LNDB.LN_LENDBSC_MAS B1
+			    ON A1.BIZNO = B1.BIZNO
+			   AND A1.CNFR_ISS_NO = B1.CNFR_ISS_NO
+			 GROUP BY A1.BIZNO, A1.CNFR_ISS_NO
+		)
+		SELECT CMDB.FUNC_CM_GET_COMM_CD_NM('LN', 'LN015', B.FND_MNG_DIV_CD) AS SPRT_BIZ_NM         /* 지원사업명 */
+		     , B.STND_YR                                                    AS SPRT_BIZ_YR         /* 지원사업연도 */
+		     , '05'                                                         AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '10'                                                         AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+		     
+             , B.CENT_CD                                                    AS SPRT_CNTR_CD        /* 지원센터코드 */
+		     , '1'                                                          AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     , REGEXP_REPLACE(B.BIZNO, '-', '')                             AS BRNO                /* 사업자등록번호 */
+		     , B.CMPN_NM                                                    AS ENT_NM              /* 기업명 */
+		     , CASE WHEN NOT REGEXP_LIKE(TRIM(B.CORPNO), '^([0-9]{13})$') THEN NULL
+		            ELSE TRIM(B.CORPNO) END                                 AS CRNO                /* 법인등록번호 */
+		     , CASE WHEN B.BIZNO IS NULL OR LENGTH(REGEXP_REPLACE(B.BIZNO, '-', '')) != 10 THEN '9'
+		            WHEN SUBSTR(REGEXP_REPLACE(B.BIZNO, '-', ''), 4, 2) IN ('81', '82', '83', '84', '85', '86', '87', '88') THEN '1'
+		            ELSE '2' END                                            AS BZMN_TYPE_CD        /* 사업자유형코드 (1: 법인기업, 2: 개인기업, 9: 알수없음) */
+		     , REGEXP_REPLACE(CASE WHEN B.NEW_WKPLC_ZIPCD IS NOT NULL THEN B.NEW_WKPLC_ZIPCD
+		                           ELSE B.WKPLC_ZIPCD END, '[^[:digit:]]')  AS ENT_ZIP             /* 기업우편번호 */
+		     , CASE WHEN B.NEW_WKPLC_ADDR1 IS NOT NULL THEN B.NEW_WKPLC_ADDR1
+		            ELSE B.WKPLC_ADDR1 END                                  AS ENT_ADDR            /* 기업기본주소 */
+		     , CASE WHEN B.NEW_WKPLC_ADDR2 IS NOT NULL THEN B.NEW_WKPLC_ADDR2
+		            ELSE B.WKPLC_ADDR2 END                                  AS ENT_DADDR           /* 기업상세주소 */
+		     , CASE WHEN LENGTH(B.OPNG_DT) = 8 THEN B.OPNG_DT
+		            ELSE NULL END                                           AS FNDN_YMD            /* 설립일자 (8자리가 아닌 데이터 존재) */
+		     , MNTH_SALES                                                   AS SLS_AMT             /* 매출액 */
+		     , NULL                                                         AS FT_WRKR_CNT         /* 상시근로자수 */
+		     , CASE WHEN LENGTH(A.CLBS_DT) = 8 THEN A.CLBS_DT
+		            ELSE NULL END                                           AS CLSBIZ_YMD          /* 폐업일자 (위배데이터 몇건만존재, 나머지 데이터 없음) */
+		     , A.STDD_INDS_CLCD                                             AS KSIC_SRCH_CD        /* 표준산업분류 검색용 코드 (업종코드 또는 표준산업분류코드) (4~5자리존재) */
+		     , B.BIZ_TEL_NO                                                 AS ENT_TELNO           /* 기업전화번호 */
+		     , CASE WHEN D.CUST_DI = '0000000000000000000000000000000000000000000000000000000000000000' THEN
+		            NULL ELSE D.CUST_DI END                                AS DI_VAL               /* DI값 */
+		     , B.RPRSR_NM                                                   AS APLCNT_NM           /* 신청자명 */
+		     , C.LEND_CNFM_AMT                                              AS GIVE_AMT            /* 지급금액 */
+		     , D.EML_ADR                                                    AS APLCNT_EML          /* 신청자이메일 */
+		     , D.CUST_TL_ARCD || D.CUST_TL_TONO || D.CUST_TL_SNO            AS APLCNT_TELNO        /* 신청자전화번호 */
+		     , D.MBTL_DSCD || D.MBTL_TONO || D.MBTL_SNO                     AS APLCNT_MBNO         /* 신청자핸드폰 */
+		     , REGEXP_REPLACE(D.OOH_ZIP, '[^[:digit:]]')                    AS APLCNT_ZIP          /* 신청자우편번호 */
+		     , D.OOH_ZADR                                                   AS APLCNT_ADDR         /* 신청자기본주소 */
+		     , D.OOH_BZADR                                                  AS APLCNT_DADDR        /* 신청자상세주소 */
+		     , NULL                                                         AS APLCNT_BRDT         /* 신청자생년월일 */
+             , CASE WHEN UPPER(D.SX_GB) IN ('M','1') THEN '1' 
+	                WHEN UPPER(D.SX_GB) IN ('F','2') THEN '2' 
+	                ELSE '9' END                                            AS APLCNT_GNDR_CD      /* 신청자성별코드 */
+		     , D.CUST_CI                                                    AS CI_VAL              /* CI값 */
+		     , NULL                                                         AS SRC_LGN_ID          /* 출처시스템로그인ID */
+		     , B.APLY_DT                                                    AS APLY_YMD            /* 신청일자 (YYYYMMDD포맷) */
+		     , C.LEND_CNFM_DT                                               AS GIVE_YMD            /* 지급일자 (YYYYMMDD포맷) */
+		     , B.RPRSR_NM                                                   AS CEO_NM              /* 대표자명 */
+		     , NULL                                                         AS FNSH_YMD            /* 수료일자 */
+		     , TO_DATE(B.REG_DT, 'YYYYMMDD')                                AS SRC_REG_DT          /* 출처시스템등록일시 */
+		     , C.LEND_CNFM_DT                                               AS SLCTN_YMD           /* 선정일자 (지급일자) */
+		     
+		     /* 대리대출시스템 */
+		     , B.FND_MNG_DIV_CD                                             AS FND_MNG_DIV_CD      /* 자금운용구분코드 */
+		     , B.CNFR_ISS_NO                                                AS CNFRM_ISSU_NO       /* 확인서발급번호 */
+		     , CMDB.FUNC_CM_SET_DECRYPT(D.CUST_RNNO)                        AS LN_CUST_RNNO        
+		  FROM LNDB.TB_SYS_CUST_BAS A
+		  JOIN LNDB.LN_FNLNAPLY_MAS B
+		    ON A.CUST_NO = B.CUST_NO
+		   AND A.RPSR_CUST_NO = B.RPSR_CUST_NO
+		  JOIN LENDBSC_MAS_TB C
+		    ON B.BIZNO = C.BIZNO
+		   AND B.CNFR_ISS_NO = C.CNFR_ISS_NO
+		  JOIN LNDB.TB_SYS_CUST_BAS D
+		    ON B.RPSR_CUST_NO = D.CUST_NO
+		 WHERE 1 = 1
+	</select>
+	
+	<!-- 대리대출 승인(개발) -->
+	<select id="selectList_DEV" resultMap="FromPlnInfo" fetchSize="1000">
+		/* SQL ID : FromPlnMapper.selectList_DEV */
+		WITH LENDBSC_MAS_TB AS (
+			SELECT  A1.BIZNO
+			      , A1.CNFR_ISS_NO
+			      , MIN(LEND_CNFM_DT) AS LEND_CNFM_DT
+		          , SUM(LEND_CNFM_AMT) AS LEND_CNFM_AMT
+			  FROM (
+					  SELECT BIZNO
+					     , CNFR_ISS_NO
+		              FROM LNDB.LN_LENDBSC_MAS
+		             WHERE LEND_CNFM_AMT IS NOT NULL
+		               AND LEND_CNFM_DT BETWEEN TO_CHAR(#{param.startDt}, 'YYYYMMDD') AND TO_CHAR(#{param.endDt}, 'YYYYMMDD')  /* 배치쿼리일자 */
+		             GROUP BY BIZNO, CNFR_ISS_NO
+			  		) A1
+			  JOIN LNDB.LN_LENDBSC_MAS B1
+			    ON A1.BIZNO = B1.BIZNO
+			   AND A1.CNFR_ISS_NO = B1.CNFR_ISS_NO
+			 GROUP BY A1.BIZNO, A1.CNFR_ISS_NO
+		)
+		SELECT CMDB.FUNC_CM_GET_COMM_CD_NM('LN', 'LN015', B.FND_MNG_DIV_CD) AS SPRT_BIZ_NM         /* 지원사업명 */
+		     , B.STND_YR                                                    AS SPRT_BIZ_YR         /* 지원사업연도 */
+		     , '05'                                                         AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '10'                                                         AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             
+		     , B.CENT_CD                                                    AS SPRT_CNTR_CD        /* 지원센터코드 */
+		     , '1'                                                          AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     , REGEXP_REPLACE(B.BIZNO, '-', '')                             AS BRNO                /* 사업자등록번호 */
+		     , B.CMPN_NM                                                    AS ENT_NM              /* 기업명 */
+		     , CASE WHEN NOT REGEXP_LIKE(TRIM(B.CORPNO), '^([0-9]{13})$') THEN NULL
+		            ELSE TRIM(B.CORPNO) END                                 AS CRNO                /* 법인등록번호 */
+		     , CASE WHEN B.BIZNO IS NULL OR LENGTH(REGEXP_REPLACE(B.BIZNO, '-', '')) != 10 THEN '9'
+		            WHEN SUBSTR(REGEXP_REPLACE(B.BIZNO, '-', ''), 4, 2) IN ('81', '82', '83', '84', '85', '86', '87', '88') THEN '1'
+		            ELSE '2' END                                            AS BZMN_TYPE_CD        /* 사업자유형코드 (1: 법인기업, 2: 개인기업, 9: 알수없음) */
+		     , REGEXP_REPLACE(CASE WHEN B.NEW_WKPLC_ZIPCD IS NOT NULL THEN B.NEW_WKPLC_ZIPCD
+		                           ELSE B.WKPLC_ZIPCD END, '[^[:digit:]]')  AS ENT_ZIP             /* 기업우편번호 */
+		     , CASE WHEN B.NEW_WKPLC_ADDR1 IS NOT NULL THEN B.NEW_WKPLC_ADDR1
+		            ELSE B.WKPLC_ADDR1 END                                  AS ENT_ADDR            /* 기업기본주소 */
+		     , CASE WHEN B.NEW_WKPLC_ADDR2 IS NOT NULL THEN B.NEW_WKPLC_ADDR2
+		            ELSE B.WKPLC_ADDR2 END                                  AS ENT_DADDR           /* 기업상세주소 */
+		     , CASE WHEN LENGTH(B.OPNG_DT) = 8 THEN B.OPNG_DT
+		            ELSE NULL END                                           AS FNDN_YMD            /* 설립일자 (8자리가 아닌 데이터 존재) */
+		     , MNTH_SALES                                                   AS SLS_AMT             /* 매출액 */
+		     , NULL                                                         AS FT_WRKR_CNT         /* 상시근로자수 */
+		     , CASE WHEN LENGTH(A.CLBS_DT) = 8 THEN A.CLBS_DT
+		            ELSE NULL END                                           AS CLSBIZ_YMD          /* 폐업일자 (위배데이터 몇건만존재, 나머지 데이터 없음) */
+		     , A.STDD_INDS_CLCD                                             AS KSIC_SRCH_CD        /* 표준산업분류 검색용 코드 (업종코드 또는 표준산업분류코드) (4~5자리존재) */
+		     , B.BIZ_TEL_NO                                                 AS ENT_TELNO           /* 기업전화번호 */
+		     , CASE WHEN D.CUST_DI = '0000000000000000000000000000000000000000000000000000000000000000' THEN
+		            NULL ELSE D.CUST_DI END                                AS DI_VAL               /* DI값 */
+		     , B.RPRSR_NM                                                   AS APLCNT_NM           /* 신청자명 */
+		     , C.LEND_CNFM_AMT                                              AS GIVE_AMT            /* 지급금액 */
+		     , D.EML_ADR                                                    AS APLCNT_EML          /* 신청자이메일 */
+		     , D.CUST_TL_ARCD || D.CUST_TL_TONO || D.CUST_TL_SNO            AS APLCNT_TELNO        /* 신청자전화번호 */
+		     , D.MBTL_DSCD || D.MBTL_TONO || D.MBTL_SNO                     AS APLCNT_MBNO         /* 신청자핸드폰 */
+		     , REGEXP_REPLACE(D.OOH_ZIP, '[^[:digit:]]')                    AS APLCNT_ZIP          /* 신청자우편번호 */
+		     , D.OOH_ZADR                                                   AS APLCNT_ADDR         /* 신청자기본주소 */
+		     , D.OOH_BZADR                                                  AS APLCNT_DADDR        /* 신청자상세주소 */
+		     , NULL                                                         AS APLCNT_BRDT         /* 신청자생년월일 */
+             , CASE WHEN UPPER(D.SX_GB) IN ('M','1') THEN '1' 
+	                WHEN UPPER(D.SX_GB) IN ('F','2') THEN '2' 
+	                ELSE '9' END                                            AS APLCNT_GNDR_CD      /* 신청자성별코드 */
+		     , D.CUST_CI                                                    AS CI_VAL              /* CI값 */
+		     , NULL                                                         AS SRC_LGN_ID          /* 출처시스템로그인ID */
+		     , B.APLY_DT                                                    AS APLY_YMD            /* 신청일자 (YYYYMMDD포맷) */
+		     , C.LEND_CNFM_DT                                               AS GIVE_YMD            /* 지급일자 (YYYYMMDD포맷) */
+		     , B.RPRSR_NM                                                   AS CEO_NM              /* 대표자명 */
+		     , NULL                                                         AS FNSH_YMD            /* 수료일자 */
+		     , TO_DATE(B.REG_DT, 'YYYYMMDD')                                AS SRC_REG_DT          /* 출처시스템등록일시 */
+		     , C.LEND_CNFM_DT                                               AS SLCTN_YMD           /* 선정일자 (지급일자) */
+		     
+		     /* 대리대출시스템 */
+		     , B.FND_MNG_DIV_CD                                             AS FND_MNG_DIV_CD      /* 자금운용구분코드 */
+		     , B.CNFR_ISS_NO                                                AS CNFRM_ISSU_NO       /* 확인서발급번호 */
+		     , D.CUST_RNNO_TX                                               AS LN_CUST_RNNO        
+		  FROM LNDB.TB_SYS_CUST_BAS A
+		  JOIN LNDB.LN_FNLNAPLY_MAS B
+		    ON A.CUST_NO = B.CUST_NO
+		   AND A.RPSR_CUST_NO = B.RPSR_CUST_NO
+		  JOIN LENDBSC_MAS_TB C
+		    ON B.BIZNO = C.BIZNO
+		   AND B.CNFR_ISS_NO = C.CNFR_ISS_NO
+		  JOIN LNDB.TB_SYS_CUST_BAS D
+		    ON B.RPSR_CUST_NO = D.CUST_NO
+		 WHERE 1 = 1
+	</select>
+	
+</mapper>

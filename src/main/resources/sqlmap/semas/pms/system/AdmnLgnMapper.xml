@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 관리자로그인기본 -->
+<mapper namespace="kr.bizdata.semas.pms.system.mapper.AdmnLgnMapper">
+	
+	<select id="selectWithPassword" resultType="kr.bizdata.semas.pms.system.info.AdmnLgnInfo">
+		/* SQL ID : AdmnLgnMapper.selectWithPassword */
+		SELECT LGN_ID       /* 로그인ID */
+		     , LGN_PW       /* 로그인비밀번호 */
+		     , LGN_NM       /* 로그인명 */
+		     , LGN_TYPE_CD  /* 로그인유형코드 */
+		     , USE_YN       /* 사용여부 */
+		  FROM ADMN_LGN
+		 WHERE LGN_ID = #{loginId}
+	</select>
+	
+</mapper>

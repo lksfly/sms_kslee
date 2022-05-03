@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 소진공로그인테이블 -->
+<mapper namespace="kr.bizdata.semas.from.smbi.mapper.VSedaLoginMapper">
+	
+	<select id="selectWithPassword" resultType="kr.bizdata.semas.from.smbi.info.VSedaLoginInfo">
+		/* SQL ID : VSedaLoginMapper.selectWithPassword */
+		SELECT MEMID     /* MEMID */
+		     , EMPNO     /* 사번 */
+		     , NAME      /* 이름 */
+		     , LOGINID   /* LOGINID */
+		     , PASSWORD  /* 비밀번호 */
+		  FROM SMBI.V_SEDA_LOGIN
+		 WHERE LOGINID = #{loginId}
+	</select>
+	
+	<select id="selectENC" resultType="String">
+		SELECT crypto_semas.ENC('TEST','F@42') FROM DUAL
+	</select>
+	
+</mapper>

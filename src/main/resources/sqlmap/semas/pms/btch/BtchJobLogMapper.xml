@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 배치작업로그 -->
+<mapper namespace="kr.bizdata.semas.pms.btch.mapper.BtchJobLogMapper">
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="jobSn">
+		/* SQL ID : BtchJobLogMapper.insert */
+		INSERT INTO BTCH_JOB_LOG (
+		       JOB_ID
+		     , BGNG_DT
+		     , END_DT
+		     , RSLT_CD
+		     , RSLT_CN
+		     , SRVR_IP_ADDR
+		     , AUTO_YN
+		) VALUES (
+		       #{jobId}
+		     , #{bgngDt}
+		     , #{endDt}
+		     , #{rsltCd}
+		     , #{rsltCn}
+		     , #{srvrIpAddr}
+		     , #{autoYn}
+		)
+	</insert>
+	
+	<resultMap id="BtchJobLogInfo" type="kr.bizdata.semas.pms.btch.info.BtchJobLogInfo" />
+	
+	<sql id="columns_BtchJobLogInfo">
+		       A.JOB_SN                /* 작업순번 */
+		     , A.JOB_ID                /* 작업아이디 */
+		     , A.BGNG_DT               /* 작업실행일시 */
+		     , A.END_DT                /* 실행종료일시 */
+		     , A.RSLT_CD               /* 실행결과코드 (E: 오류, S: 성공) */
+		     , A.RSLT_CN               /* 실행결과내용 (오류메시지) */
+		     , A.SRVR_IP_ADDR          /* 실행서버IP주소 */
+		     , A.AUTO_YN               /* 자동실행여부 (Y: 자동실행, N: 수동실행) */
+		     
+		     , C.CMN_CD_NM AS RSLT_NM  /* 실행결과명 */
+		     
+		     , B.JOB_NM                /* 작업명 */
+		     , B.PCKG_NM               /* 패키지명 */
+		     , B.CLS_NM                /* 클래스명 */
+		     , B.MTHD_NM               /* 메소드명 */
+	</sql>
+	
+	<select id="select" resultMap="BtchJobLogInfo">
+		/* SQL ID : BtchJobLogMapper.select */
+		SELECT <include refid="columns_BtchJobLogInfo" />
+		  FROM BTCH_JOB_LOG A
+		       INNER JOIN BTCH_JOB_REG B
+		               ON B.JOB_ID = A.JOB_ID
+		       LEFT OUTER JOIN CMN_CD C
+		               ON C.CMN_DIV_CD = 'RSLT_CD' AND C.CMN_CD = A.RSLT_CD  /* 실행결과코드 */
+		 WHERE A.JOB_SN = #{jobSn}  /* 작업순번 */
+	</select>
+	
+	<sql id="sql_selectList_bind">
+		<choose>
+			<when test="paging.sortName == 'jobNm'     "><bind name="orderBy" value="'JOB_NM '       + paging.sortType" /></when>
+			<when test="paging.sortName == 'bgngDt'    "><bind name="orderBy" value="'BGNG_DT '      + paging.sortType" /></when>
+			<when test="paging.sortName == 'endDt'     "><bind name="orderBy" value="'END_DT '       + paging.sortType" /></when>
+			<when test="paging.sortName == 'rsltNm'    "><bind name="orderBy" value="'RSLT_NM '      + paging.sortType" /></when>
+			<when test="paging.sortName == 'srvrIpAddr'"><bind name="orderBy" value="'SRVR_IP_ADDR ' + paging.sortType" /></when>
+			<otherwise><bind name="orderBy" value="'JOB_SN DESC'" /></otherwise>
+		</choose>
+	</sql>
+	
+	<sql id="sql_selectList">
+		SELECT <include refid="columns_BtchJobLogInfo" />
+		  FROM BTCH_JOB_LOG A
+		       INNER JOIN BTCH_JOB_REG B
+		               ON B.JOB_ID = A.JOB_ID
+		       LEFT OUTER JOIN CMN_CD C
+		               ON C.CMN_DIV_CD = 'RSLT_CD' AND C.CMN_CD = A.RSLT_CD  /* 실행결과코드 */
+		<where>
+		<if test="param.bgngYmd != null and param.bgngYmd.length() > 0">
+		   AND DATE_FORMAT(A.BGNG_DT, '%Y%m%d') LIKE CONCAT(#{param.bgngYmd}, '%')  /* 작업실행일 (yyyyMMdd) */
+		</if>
+		<if test="param.jobNm != null and param.jobNm.length() > 0">
+		   AND B.JOB_NM LIKE CONCAT('%', #{param.jobNm}, '%')  /* 작업명 */
+		</if>
+		<if test="param.rsltCd != null and param.rsltCd.length() > 0">
+		   AND A.RSLT_CD = #{param.rsltCd}  /* 실행결과코드 (E: 오류, S: 성공) */
+		</if>
+		</where>
+	</sql>
+	
+	<select id="selectListAll" resultMap="BtchJobLogInfo" fetchSize="1000">
+		<include refid="sql_selectList_bind" />
+		
+		/* SQL ID : BtchJobLogMapper.selectListAll */
+		<include refid="sql_selectList" />
+		 ORDER BY ${orderBy}
+	</select>
+	
+	<select id="selectListPaging" resultMap="BtchJobLogInfo">
+		<include refid="sql_selectList_bind" />
+		
+		/* SQL ID : BtchJobLogMapper.selectListPaging */
+		<include refid="sql_selectList" />
+		 ORDER BY ${orderBy} LIMIT #{paging.startIndex}, #{paging.rowsCnt}
+	</select>
+	
+	<select id="countList" resultType="int">
+		/* SQL ID : BtchJobLogMapper.countList */
+		SELECT COUNT(*) FROM (
+			<include refid="sql_selectList" />
+		) CNT
+	</select>
+	
+</mapper>

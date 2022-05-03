@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 업종코드10차표준산업분류연계 -->
+<mapper namespace="kr.bizdata.semas.pms.cmn.mapper.BizclsKsicLinkMapper">
+	
+	<resultMap id="BizclsKsicLinkInfo" type="kr.bizdata.semas.pms.cmn.info.BizclsKsicLinkInfo" />
+	
+	<select id="select" resultMap="BizclsKsicLinkInfo">
+		/* SQL ID : BizclsKsicLinkMapper.select */
+		SELECT KSIC_LCLS_CD  /* 표준산업분류대분류코드 (1자리) */
+		     , KSIC_MCLS_CD  /* 표준산업분류중분류코드 (2자리) */
+		     , KSIC_SCLS_CD  /* 표준산업분류소분류코드 (3자리) */
+		     , IF(
+		           #{ksicSrchCd} = KSIC_XSCLS_CD, KSIC_XSCLS_CD, KSIC_CD
+		       ) AS KSIC_CD  /* 표준산업분류코드 (4자리 또는 5자리, 세분류 또는 세세분류) */
+		     , BIZCLS_CD     /* 업종코드 (6자리, 세세분류) */
+		  FROM BIZCLS_KSIC_LINK
+		 WHERE KSIC_XSCLS_CD = #{ksicSrchCd}  /* 표준 (4자리, 세분류) */
+		    OR KSIC_CD = #{ksicSrchCd}        /* 표준 (5자리, 세세분류) */
+		    OR BIZCLS_CD = #{ksicSrchCd}      /* 업종 (6자리, 세세분류) */
+		 ORDER BY KSIC_CD LIMIT 1  /* MIN 값을 선택한다. */
+	</select>
+	
+</mapper>

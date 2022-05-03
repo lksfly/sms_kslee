@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 지원사업명관리기본 -->
+<mapper namespace="kr.bizdata.semas.pms.sprt.mapper.SprtBizNmMngMapper">
+	
+	<insert id="insert">
+		/* SQL ID : SprtBizNmMngMapper.insert */
+		INSERT INTO SPRT_BIZ_NM_MNG (
+		       SPRT_BIZ_NM_SN   /* 지원사업명일련번호 */
+		     , SPRT_BIZ_NM      /* 지원사업명 */
+		     , SPRT_BIZ_DIV_CD  /* 지원사업구분코드 */
+		     , REG_DT           /* 등록일시 */
+		) VALUES (
+		       #{sprtBizNmSn}   /* 지원사업명일련번호 */
+		     , #{sprtBizNm}     /* 지원사업명 */
+		     , #{sprtBizDivCd}  /* 지원사업구분코드 */
+		     , NOW()            /* 등록일시 */
+		)
+	</insert>
+	
+	<resultMap id="SprtBizNmMngInfo" type="kr.bizdata.semas.pms.sprt.info.SprtBizNmMngInfo" />
+	
+	<sql id="columns_SprtBizNmMngInfo">
+		       SPRT_BIZ_NM_SN   /* 지원사업명일련번호 */
+		     , SPRT_BIZ_NM      /* 지원사업명 */
+		     , SPRT_BIZ_DIV_CD  /* 지원사업구분코드 */
+		     , REG_DT           /* 등록일시 */
+	</sql>
+	
+	<select id="select" resultMap="SprtBizNmMngInfo">
+		/* SQL ID : SprtBizNmMngMapper.select */
+		SELECT <include refid="columns_SprtBizNmMngInfo" />
+		  FROM SPRT_BIZ_NM_MNG
+		 WHERE SPRT_BIZ_NM_SN = #{sprtBizNmSn}  /* 지원사업명일련번호 */
+	</select>
+	
+	<select id="selectBySprtBizDivCd" resultMap="SprtBizNmMngInfo">
+		/* SQL ID : SprtBizNmMngMapper.select */
+		SELECT <include refid="columns_SprtBizNmMngInfo" />
+		  FROM SPRT_BIZ_NM_MNG
+		 WHERE SPRT_BIZ_DIV_CD = #{sprtBizDivCd}  /* 지원사업구분코드 */
+	</select>
+	
+</mapper>

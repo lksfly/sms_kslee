@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:c="http://www.springframework.org/schema/c"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+							http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+	
+	<bean id="logFormatter" class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter" p:loggingType="MULTI_LINE" p:sqlPrefix="" />
+	
+	<!--
+		DataSource (1)
+	-->
+	<bean id="dataSourceSpied-1" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
+			p:driverClassName               = "${bzd.db1.driver}"
+			p:url                           = "${bzd.db1.url}"
+			p:username                      = "${bzd.db1.username}"
+			p:password                      = "${bzd.db1.password}"
+			p:defaultAutoCommit             = "false"
+			p:initialSize                   = "${bzd.db1.pool.initialSize}"
+			p:maxTotal                      = "${bzd.db1.pool.maxActive}"
+			p:maxIdle                       = "${bzd.db1.pool.maxIdle}"
+			p:maxWaitMillis                 = "${bzd.db1.pool.maxWait}"
+			p:testOnBorrow                  = "false"
+			p:testOnReturn                  = "false"
+			p:testWhileIdle                 = "true"
+			p:validationQuery               = "${bzd.db1.pool.validationQuery}"
+			p:timeBetweenEvictionRunsMillis = "${bzd.db1.pool.timeBetweenEvictionRunsMillis}"
+			p:numTestsPerEvictionRun        = "${bzd.db1.pool.numTestsPerEvictionRun}"
+			p:minEvictableIdleTimeMillis    = "${bzd.db1.pool.minEvictableIdleTimeMillis}"
+			p:connectionInitSqls            = "set names utf8mb4" />
+	<!-- Log4jdbc -->
+	<bean id="dataSource-1" class="net.sf.log4jdbc.Log4jdbcProxyDataSource" c:_0-ref="dataSourceSpied-1" p:logFormatter-ref="logFormatter" />
+	<!-- MyBatis Mapper Scan (XML, @Repository) -->
+	<bean id="sqlSessionFactory-1" class="org.mybatis.spring.SqlSessionFactoryBean" p:dataSource-ref="dataSource-1" p:configLocation="classpath:config/mybatis/mybatis-config.xml">
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:sqlmap/semas/pms/**/*.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:sqlSessionFactoryBeanName="sqlSessionFactory-1"
+			p:annotationClass="org.springframework.stereotype.Repository" p:basePackage="kr.bizdata.semas.pms.**.mapper" />
+	<!-- Transaction -->
+	<bean id="txManager-1" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" p:dataSource-ref="dataSource-1" />
+	<tx:advice id="txAdvice-1" transaction-manager="txManager-1">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="txPointcut-1" expression="execution(* kr.bizdata.semas.pms..service..*Service.*(..))" />
+		<aop:advisor advice-ref="txAdvice-1" pointcut-ref="txPointcut-1" />
+	</aop:config>
+	
+	<!--
+		DataSource (2)
+	-->
+	<bean id="dataSourceSpied-2" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
+			p:driverClassName               = "${bzd.db2.driver}"
+			p:url                           = "${bzd.db2.url}"
+			p:username                      = "${bzd.db2.username}"
+			p:password                      = "${bzd.db2.password}"
+			p:defaultAutoCommit             = "false"
+			p:initialSize                   = "${bzd.db2.pool.initialSize}"
+			p:maxTotal                      = "${bzd.db2.pool.maxActive}"
+			p:maxIdle                       = "${bzd.db2.pool.maxIdle}"
+			p:maxWaitMillis                 = "${bzd.db2.pool.maxWait}"
+			p:testOnBorrow                  = "false"
+			p:testOnReturn                  = "false"
+			p:testWhileIdle                 = "true"
+			p:validationQuery               = "${bzd.db2.pool.validationQuery}"
+			p:timeBetweenEvictionRunsMillis = "${bzd.db2.pool.timeBetweenEvictionRunsMillis}"
+			p:numTestsPerEvictionRun        = "${bzd.db2.pool.numTestsPerEvictionRun}"
+			p:minEvictableIdleTimeMillis    = "${bzd.db2.pool.minEvictableIdleTimeMillis}"
+			p:connectionInitSqls            = "" />
+	<!-- Log4jdbc -->
+	<bean id="dataSource-2" class="net.sf.log4jdbc.Log4jdbcProxyDataSource" c:_0-ref="dataSourceSpied-2" p:logFormatter-ref="logFormatter" />
+	<!-- MyBatis Mapper Scan (XML, @Repository) -->
+	<bean id="sqlSessionFactory-2" class="org.mybatis.spring.SqlSessionFactoryBean" p:dataSource-ref="dataSource-2" p:configLocation="classpath:config/mybatis/mybatis-config.xml">
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:sqlmap/semas/from/cnslt/**/*.xml</value>
+				<value>classpath:sqlmap/semas/from/edu/**/*.xml</value>
+				<value>classpath:sqlmap/semas/from/hope/**/*.xml</value>
+				<value>classpath:sqlmap/semas/from/smbi/**/*.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:sqlSessionFactoryBeanName="sqlSessionFactory-2"
+			p:annotationClass="org.springframework.stereotype.Repository" p:basePackage="kr.bizdata.semas.from.cnslt.**.mapper" />
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:sqlSessionFactoryBeanName="sqlSessionFactory-2"
+			p:annotationClass="org.springframework.stereotype.Repository" p:basePackage="kr.bizdata.semas.from.edu.**.mapper" />
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:sqlSessionFactoryBeanName="sqlSessionFactory-2"
+			p:annotationClass="org.springframework.stereotype.Repository" p:basePackage="kr.bizdata.semas.from.hope.**.mapper" />
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:sqlSessionFactoryBeanName="sqlSessionFactory-2"
+			p:annotationClass="org.springframework.stereotype.Repository" p:basePackage="kr.bizdata.semas.from.smbi.**.mapper" />
+	<!-- Transaction -->
+	<bean id="txManager-2" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" p:dataSource-ref="dataSource-2" />
+	<tx:advice id="txAdvice-2" transaction-manager="txManager-2">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="txPointcut-2" expression="execution(* kr.bizdata.semas.from.cnslt..service..*Service.*(..))
+												 || execution(* kr.bizdata.semas.from.edu..service..*Service.*(..))
+												 || execution(* kr.bizdata.semas.from.hope..service..*Service.*(..))
+												 || execution(* kr.bizdata.semas.from.smbi..service..*Service.*(..))" />
+		<aop:advisor advice-ref="txAdvice-2" pointcut-ref="txPointcut-2" />
+	</aop:config>
+	
+	<!--
+		DataSource (3)
+	-->
+	<bean id="dataSourceSpied-3" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
+			p:driverClassName               = "${bzd.db3.driver}"
+			p:url                           = "${bzd.db3.url}"
+			p:username                      = "${bzd.db3.username}"
+			p:password                      = "${bzd.db3.password}"
+			p:defaultAutoCommit             = "false"
+			p:initialSize                   = "${bzd.db3.pool.initialSize}"
+			p:maxTotal                      = "${bzd.db3.pool.maxActive}"
+			p:maxIdle                       = "${bzd.db3.pool.maxIdle}"
+			p:maxWaitMillis                 = "${bzd.db3.pool.maxWait}"
+			p:testOnBorrow                  = "false"
+			p:testOnReturn                  = "false"
+			p:testWhileIdle                 = "true"
+			p:validationQuery               = "${bzd.db3.pool.validationQuery}"
+			p:timeBetweenEvictionRunsMillis = "${bzd.db3.pool.timeBetweenEvictionRunsMillis}"
+			p:numTestsPerEvictionRun        = "${bzd.db3.pool.numTestsPerEvictionRun}"
+			p:minEvictableIdleTimeMillis    = "${bzd.db3.pool.minEvictableIdleTimeMillis}"
+			p:connectionInitSqls            = "" />
+	<!-- Log4jdbc -->
+	<bean id="dataSource-3" class="net.sf.log4jdbc.Log4jdbcProxyDataSource" c:_0-ref="dataSourceSpied-3" p:logFormatter-ref="logFormatter" />
+	<!-- MyBatis Mapper Scan (XML, @Repository) -->
+	<bean id="sqlSessionFactory-3" class="org.mybatis.spring.SqlSessionFactoryBean" p:dataSource-ref="dataSource-3" p:configLocation="classpath:config/mybatis/mybatis-config.xml">
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:sqlmap/semas/from/dln/**/*.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:sqlSessionFactoryBeanName="sqlSessionFactory-3"
+			p:annotationClass="org.springframework.stereotype.Repository" p:basePackage="kr.bizdata.semas.from.dln.**.mapper" />
+	<!-- Transaction -->
+	<bean id="txManager-3" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" p:dataSource-ref="dataSource-3" />
+	<tx:advice id="txAdvice-3" transaction-manager="txManager-3">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="txPointcut-3" expression="execution(* kr.bizdata.semas.from.dln..service..*Service.*(..))" />
+		<aop:advisor advice-ref="txAdvice-3" pointcut-ref="txPointcut-3" />
+	</aop:config>
+	
+	<!--
+		DataSource (4)
+	-->
+	<bean id="dataSourceSpied-4" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close"
+			p:driverClassName               = "${bzd.db4.driver}"
+			p:url                           = "${bzd.db4.url}"
+			p:username                      = "${bzd.db4.username}"
+			p:password                      = "${bzd.db4.password}"
+			p:defaultAutoCommit             = "false"
+			p:initialSize                   = "${bzd.db4.pool.initialSize}"
+			p:maxTotal                      = "${bzd.db4.pool.maxActive}"
+			p:maxIdle                       = "${bzd.db4.pool.maxIdle}"
+			p:maxWaitMillis                 = "${bzd.db4.pool.maxWait}"
+			p:testOnBorrow                  = "false"
+			p:testOnReturn                  = "false"
+			p:testWhileIdle                 = "true"
+			p:validationQuery               = "${bzd.db4.pool.validationQuery}"
+			p:timeBetweenEvictionRunsMillis = "${bzd.db4.pool.timeBetweenEvictionRunsMillis}"
+			p:numTestsPerEvictionRun        = "${bzd.db4.pool.numTestsPerEvictionRun}"
+			p:minEvictableIdleTimeMillis    = "${bzd.db4.pool.minEvictableIdleTimeMillis}"
+			p:connectionInitSqls            = "" />
+	<!-- Log4jdbc -->
+	<bean id="dataSource-4" class="net.sf.log4jdbc.Log4jdbcProxyDataSource" c:_0-ref="dataSourceSpied-4" p:logFormatter-ref="logFormatter" />
+	<!-- MyBatis Mapper Scan (XML, @Repository) -->
+	<bean id="sqlSessionFactory-4" class="org.mybatis.spring.SqlSessionFactoryBean" p:dataSource-ref="dataSource-4" p:configLocation="classpath:config/mybatis/mybatis-config.xml">
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:sqlmap/semas/from/pln/**/*.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer" p:sqlSessionFactoryBeanName="sqlSessionFactory-4"
+			p:annotationClass="org.springframework.stereotype.Repository" p:basePackage="kr.bizdata.semas.from.pln.**.mapper" />
+	<!-- Transaction -->
+	<bean id="txManager-4" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" p:dataSource-ref="dataSource-4" />
+	<tx:advice id="txAdvice-4" transaction-manager="txManager-4">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Exception" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:pointcut id="txPointcut-4" expression="execution(* kr.bizdata.semas.from.pln..service..*Service.*(..))" />
+		<aop:advisor advice-ref="txAdvice-4" pointcut-ref="txPointcut-4" />
+	</aop:config>
+	
+</beans>

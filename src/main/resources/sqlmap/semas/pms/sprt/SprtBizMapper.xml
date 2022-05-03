@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 지원사업기본 -->
+<mapper namespace="kr.bizdata.semas.pms.sprt.mapper.SprtBizMapper">
+	
+	<insert id="insert" useGeneratedKeys="true" keyProperty="sprtBizSn">
+		/* SQL ID : SprtBizMapper.insert */
+		INSERT INTO SPRT_BIZ (
+		       SPRT_BIZ_NM      /* 지원사업명 */
+		     , SPRT_BIZ_YR      /* 지원사업연도 */
+		     , SRC_SYS_CD       /* 출처시스템코드 */
+		     , SPRT_BIZ_DIV_CD  /* 지원사업구분코드 */
+		     , REG_DT           /* 등록일시 */
+		) VALUES (
+		       #{sprtBizNm}     /* 지원사업명 */
+		     , #{sprtBizYr}     /* 지원사업연도 */
+		     , #{srcSysCd}      /* 출처시스템코드 */
+		     , #{sprtBizDivCd}  /* 지원사업구분코드 */
+		     , NOW()            /* 등록일시 */
+		)
+	</insert>
+	
+	<update id="update">
+		/* SQL ID : SprtBizMapper.update */
+		UPDATE SPRT_BIZ
+		   SET SPRT_BIZ_NM     = #{sprtBizNm}     /* 지원사업명 */
+		     , SPRT_BIZ_YR     = #{sprtBizYr}     /* 지원사업연도 */
+		     , SRC_SYS_CD      = #{srcSysCd}      /* 출처시스템코드 */
+		     , SPRT_BIZ_DIV_CD = #{sprtBizDivCd}  /* 지원사업구분코드 */
+		   /*, UPD_DT */
+		 WHERE SPRT_BIZ_SN = #{sprtBizSn}  /* 지원사업일련번호 */
+	</update>
+	
+	<resultMap id="SprtBizInfo" type="kr.bizdata.semas.pms.sprt.info.SprtBizInfo" />
+	
+	<sql id="columns_SprtBizInfo">
+		       SPRT_BIZ_SN      /* 지원사업일련번호 */
+		     , SPRT_BIZ_NM      /* 지원사업명 */
+		     , SPRT_BIZ_YR      /* 지원사업연도 */
+		     , SRC_SYS_CD       /* 출처시스템코드 */
+		     , SPRT_BIZ_DIV_CD  /* 지원사업구분코드 */
+		     , REG_DT           /* 등록일시 */
+	</sql>
+	
+	<select id="select" resultMap="SprtBizInfo">
+		/* SQL ID : SprtBizMapper.select */
+		SELECT <include refid="columns_SprtBizInfo" />
+		  FROM SPRT_BIZ
+		 WHERE SPRT_BIZ_SN = #{sprtBizSn}  /* 지원사업일련번호 */
+	</select>
+	
+	<insert id="insert_edu">
+		/* SQL ID : SprtBizMapper.insert_edu */
+		INSERT INTO EDU_SPRT_BIZ (EDU_SPRT_BIZNO, SPRT_BIZ_SN) VALUES (#{eduSprtBizno}, #{sprtBizSn})  /* 교육 */
+	</insert>
+	<insert id="insert_cnslt">
+		/* SQL ID : SprtBizMapper.insert_cnslt */
+		INSERT INTO CNSLT_SPRT_BIZ (SPRT_BIZ_NM_SN, SPRT_BIZ_SN) VALUES (#{sprtBizNmSn}, #{sprtBizSn})  /* 컨설팅 */
+	</insert>
+	<insert id="insert_hope1">
+		/* SQL ID : SprtBizMapper.insert_hope1 */
+		INSERT INTO HOPE_SPRT_BIZ (HOPE_SPRT_BIZNO, SPRT_BIZ_SN) VALUES (#{hopeSprtBizno}, #{sprtBizSn})  /* 희망리턴 (컨설팅, 재기교육) */
+	</insert>
+	<insert id="insert_hope2">
+		/* SQL ID : SprtBizMapper.insert_hope2 */
+		INSERT INTO HOPE_SPRT_BIZ (HOPE_SPRT_BIZNO, SPRT_BIZ_SN) VALUES (#{hopeSprtBizno}, #{sprtBizSn})  /* 희망리턴 (컨설팅, 재기교육) */
+	</insert>
+	<insert id="insert_hope3">
+		/* SQL ID : SprtBizMapper.insert_hope3 */
+		INSERT INTO HOPE_SBSDY_SPRT_BIZ (SPRT_BIZ_NM_SN, SPRT_BIZ_SN) VALUES (#{sprtBizNmSn}, #{sprtBizSn})  /* 희망리턴 (장려금) */
+	</insert>
+	<insert id="insert_dln">
+		/* SQL ID : SprtBizMapper.insert_dln */
+		INSERT INTO DLN_SPRT_BIZ (PLCY_FND_CD, SPRT_BIZ_SN) VALUES (#{plcyFndCd}, #{sprtBizSn})  /* 직접대출 */
+	</insert>
+	<insert id="insert_pln">
+		/* SQL ID : SprtBizMapper.insert_pln */
+		INSERT INTO PLN_SPRT_BIZ (FND_MNG_DIV_CD, SPRT_BIZ_SN) VALUES (#{fndMngDivCd}, #{sprtBizSn})  /* 대리대출 */
+	</insert>
+	
+	<select id="selectSprtBizSn_edu" resultType="Long">
+		/* SQL ID : SprtBizMapper.selectSprtBizSn_edu */
+		SELECT B.SPRT_BIZ_SN 
+		  FROM SPRT_BIZ A 
+		  JOIN EDU_SPRT_BIZ B
+		    ON A.SPRT_BIZ_SN = B.SPRT_BIZ_SN 
+		 WHERE B.EDU_SPRT_BIZNO = #{eduSprtBizno}
+		   AND A.SPRT_BIZ_YR = #{sprtBizYr}  /* 교육 */
+	</select>
+	<select id="selectSprtBizSn_cnslt" resultType="Long">
+		/* SQL ID : SprtBizMapper.selectSprtBizSn_cnslt */
+		SELECT B.SPRT_BIZ_SN 
+		  FROM SPRT_BIZ A
+		  JOIN CNSLT_SPRT_BIZ B
+            ON A.SPRT_BIZ_SN = B.SPRT_BIZ_SN
+        WHERE B.SPRT_BIZ_NM_SN = (SELECT SPRT_BIZ_NM_SN
+  							        FROM SPRT_BIZ_NM_MNG
+                                    WHERE SPRT_BIZ_DIV_CD = #{sprtBizDivCd} )
+          AND SPRT_BIZ_DIV_CD = #{sprtBizDivCd}
+          AND A.SPRT_BIZ_YR = #{sprtBizYr}  /* 컨설팅 */
+	</select>
+	<select id="selectSprtBizSn_hope1" resultType="Long">
+		/* SQL ID : SprtBizMapper.selectSprtBizSn_hope1 */
+		SELECT B.SPRT_BIZ_SN 
+		  FROM SPRT_BIZ A 
+		  JOIN HOPE_SPRT_BIZ B
+		    ON A.SPRT_BIZ_SN = B.SPRT_BIZ_SN 
+		 WHERE B.HOPE_SPRT_BIZNO = #{hopeSprtBizno}  
+		   AND A.SPRT_BIZ_YR = #{sprtBizYr}  /* 희망리턴 (컨설팅, 재기교육) */
+	</select>
+	<select id="selectSprtBizSn_hope2" resultType="Long">
+		/* SQL ID : SprtBizMapper.selectSprtBizSn_hope2 */
+		SELECT B.SPRT_BIZ_SN 
+		  FROM SPRT_BIZ A 
+		  JOIN HOPE_SPRT_BIZ B
+		    ON A.SPRT_BIZ_SN = B.SPRT_BIZ_SN 
+		 WHERE B.HOPE_SPRT_BIZNO = #{hopeSprtBizno}  
+		   AND A.SPRT_BIZ_YR = #{sprtBizYr}  /* 희망리턴 (컨설팅, 재기교육) */
+	</select>
+	<select id="selectSprtBizSn_hope3" resultType="Long">
+		/* SQL ID : SprtBizMapper.selectSprtBizSn_hope3 */
+		SELECT B.SPRT_BIZ_SN 
+		  FROM SPRT_BIZ A
+		  JOIN HOPE_SBSDY_SPRT_BIZ B
+            ON A.SPRT_BIZ_SN = B.SPRT_BIZ_SN
+        WHERE B.SPRT_BIZ_NM_SN = (SELECT SPRT_BIZ_NM_SN
+  							        FROM SPRT_BIZ_NM_MNG
+                                    WHERE SPRT_BIZ_DIV_CD = #{sprtBizDivCd} )
+          AND SPRT_BIZ_DIV_CD = #{sprtBizDivCd}
+          AND A.SPRT_BIZ_YR = #{sprtBizYr}  /* 희망리턴 (장려금) */
+	</select>
+	<select id="selectSprtBizSn_dln" resultType="Long">
+		/* SQL ID : SprtBizMapper.selectSprtBizSn_dln */
+		SELECT B.SPRT_BIZ_SN
+		  FROM SPRT_BIZ A
+		  JOIN DLN_SPRT_BIZ B
+		    ON A.SPRT_BIZ_SN  = B.SPRT_BIZ_SN
+		 WHERE B.PLCY_FND_CD = #{plcyFndCd}
+		   AND A.SPRT_BIZ_YR = #{sprtBizYr}  /* 직접대출 */
+	</select>
+	<select id="selectSprtBizSn_pln" resultType="Long">
+		/* SQL ID : SprtBizMapper.selectSprtBizSn_pln */
+		SELECT B.SPRT_BIZ_SN
+		  FROM SPRT_BIZ A
+		  JOIN PLN_SPRT_BIZ B
+		    ON A.SPRT_BIZ_SN  = B.SPRT_BIZ_SN
+		 WHERE B.FND_MNG_DIV_CD = #{fndMngDivCd}
+		   AND A.SPRT_BIZ_YR = #{sprtBizYr}  /* 대리대출 */
+	</select>
+	
+</mapper>

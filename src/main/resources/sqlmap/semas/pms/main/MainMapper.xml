@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	## 메인페이지
+	- 공통처리사항 >> 인덱스 처리를 위해 강제로 기간 BETWEEN 조건으로 비교
+-->
+<mapper namespace="kr.bizdata.semas.pms.main.mapper.MainMapper">
+
+	<!-- 1. 당월 지원사업 진행현황 -->
+	<select id="M01" resultType="map">
+		/* SQL ID :  MainMapper.M01 */
+		SELECT SPRT_YM  /* 지원사업 년월 */
+		     , DATE_FORMAT(CONCAT(SPRT_YM,'01'), '%Y') AS SPRT_Y  /* 지원사업 년 */
+		     , DATE_FORMAT(CONCAT(SPRT_YM,'01'), '%m') AS SPRT_M  /* 지원사업 월 */
+		     , SPRT_CNT AS SPRT_CNT /* 지원사업수 */
+		     , GIVE_AMT AS GIVE_AMT /* 지원금액 */
+		     , SPRT_CNTR_CNT AS SPRT_CNTR_CNT /* 지원센터 */
+		     , SPRT_BIZ_CNT + SPRT_PSNL_CNT AS SPRT_BIZ_PSNL_CNT /* 지원사업 업체 수 + 지원사업 개인 수 */
+		  FROM (
+				SELECT SUBSTRING(A.SLCTN_YMD, 1, 6) AS SPRT_YM
+				     , COUNT(DISTINCT A.APLY_SN) AS SPRT_CNT
+				     , FLOOR(SUM(A.GIVE_AMT) / 1000) AS GIVE_AMT
+				     , COUNT(DISTINCT A.SPRT_CNTR_CD) SPRT_CNTR_CNT
+				     , COUNT(DISTINCT A.BRNO) SPRT_BIZ_CNT
+				     , COUNT(DISTINCT A.DI_VAL) SPRT_PSNL_CNT
+				  FROM SPRT_BIZ_APLY A
+				 <if test='DETAIL_YN != null and DETAIL_YN eq "N"'>
+				 /* 월별 조회 */
+				 WHERE A.SLCTN_YMD BETWEEN CONCAT(#{SLCTN_YM},'01') AND CONCAT(#{SLCTN_YM},'31')
+				 </if>
+				<if test='DETAIL_YN != null and DETAIL_YN eq "Y"'>
+				 /* 년도별 조회 */
+				 WHERE A.SLCTN_YMD BETWEEN CONCAT(#{SLCTN_YM},'0101') AND CONCAT(#{SLCTN_YM},'1231')
+				 </if>
+				   AND A.APLY_STS_CD = '1'
+				 GROUP BY SUBSTRING(A.SLCTN_YMD, 1, 6)
+		  ) v
+		  ORDER BY 1
+	</select>
+
+	<!-- 2. 당월 사업별 지원 현황 -->
+	<select id="M02" resultType="java.util.LinkedHashMap">
+		/* SQL ID :  MainMapper.M02 */
+		SELECT SPRT_YM   AS SPRT_YM
+		     , EDU_CNT   AS EDU_CNT
+			 , CNSLT_CNT AS CNSLT_CNT
+			 , HOPE_CNT  AS HOPE_CNT
+			 , DL_CNT    AS DL_CNT
+			 , PL_CNT    AS PL_CNT
+		  FROM (
+				SELECT SUBSTRING(A.SLCTN_YMD, 1, 6) AS SPRT_YM
+					 , SUM(CASE WHEN B.SRC_SYS_CD = '01' THEN 1 ELSE 0 END) AS EDU_CNT /* 교육 */
+					 , SUM(CASE WHEN B.SRC_SYS_CD = '02' THEN 1 ELSE 0 END) AS CNSLT_CNT /* 컨설팅 */
+					 , SUM(CASE WHEN B.SRC_SYS_CD = '03' THEN 1 ELSE 0 END) AS HOPE_CNT /* 희망리턴 */
+					 , SUM(CASE WHEN B.SRC_SYS_CD = '04' THEN 1 ELSE 0 END) AS DL_CNT /* 직접대출 */
+					 , SUM(CASE WHEN B.SRC_SYS_CD = '05' THEN 1 ELSE 0 END) AS PL_CNT /* 대리대출 */
+				  FROM SPRT_BIZ_APLY A
+				  LEFT OUTER JOIN SPRT_BIZ B
+					ON A.SPRT_BIZ_SN = B.SPRT_BIZ_SN
+ 				 WHERE A.SLCTN_YMD BETWEEN CONCAT(#{SLCTN_YM},'01') AND CONCAT(#{SLCTN_YM},'31')
+				   AND A.APLY_STS_CD = '1'
+				 GROUP BY SUBSTRING(A.SLCTN_YMD, 1, 6)
+		  ) AS v
+	</select>
+
+	<!-- 3. 당월 지급일자 별 지원사업 현황 -->
+	<select id="M03" resultType="java.util.LinkedHashMap">
+		/* SQL ID :  MainMapper.M03 */
+		SELECT YMD.SORT_ORDER
+		     , DATE_FORMAT(YMD.SLCTN_YMD,'%m.%d') AS SLCTN_YMD
+		     , IFNULL(SPRT_CNT,0) AS SPRT_CNT
+		  FROM
+		    (
+		        <foreach collection="monthDays" item="day" separator=" UNION">
+					SELECT CONCAT(#{SLCTN_YM}, LPAD(#{day},2, '0')) AS SLCTN_YMD, ${day} AS SORT_ORDER
+				</foreach>
+		    ) YMD
+		    LEFT JOIN
+		    (
+				SELECT A.SLCTN_YMD AS SLCTN_YMD
+				     , COUNT(DISTINCT A.APLY_SN) AS SPRT_CNT
+				  FROM SPRT_BIZ_APLY A
+				 WHERE A.SLCTN_YMD BETWEEN CONCAT(#{SLCTN_YM},'01') AND CONCAT(#{SLCTN_YM},'31')
+				   AND A.APLY_STS_CD = '1'
+				 GROUP BY A.SLCTN_YMD
+			 ) V_DATA
+			 ON YMD.SLCTN_YMD = V_DATA.SLCTN_YMD
+			ORDER BY 1
+	</select>
+
+	<!-- 4. 월별 지원 사업 현황-->
+	<select id="M04" resultType="java.util.LinkedHashMap">
+		/* SQL ID :  MainMapper.M04 */
+		SELECT YM.SORT_ORDER
+			 , DATE_FORMAT(CONCAT(YM.SPRT_YM,'01'),'%m')  AS SPRT_YM /* 지원사업 년월 */
+			 , SUBSTRING(YM.SPRT_YM,1,4) AS SPRT_Y /* 지원사업 년 */
+			 , SUBSTRING(YM.SPRT_YM,5,6) AS SPRT_M /* 지원사업 월 */
+			 , IFNULL(V_DATA.HOPE_CNT,0) + IFNULL(V_DATA.DL_CNT,0)  +
+			   IFNULL(V_DATA.PL_CNT,0)   + IFNULL(V_DATA.EDU_CNT,0) + IFNULL(V_DATA.CNSLT_CNT,0) AS SPRT_SUM
+			 , IFNULL(V_DATA.HOPE_CNT,0) AS HOPE_CNT /* 희망리턴 */
+			 , IFNULL(V_DATA.DL_CNT,0) AS DL_CNT /* 직접대출 */
+			 , IFNULL(V_DATA.PL_CNT,0) AS PL_CNT /* 대리대출 */
+		     , IFNULL(V_DATA.EDU_CNT,0) AS EDU_CNT /* 교육 */
+		     , IFNULL(V_DATA.CNSLT_CNT,0) AS CNSLT_CNT /* 컨설팅 */
+		  FROM
+		    (
+				SELECT CONCAT(#{BIZ_YEAR},'01') AS SPRT_YM,  1 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'02') AS SPRT_YM,  2 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'03') AS SPRT_YM,  3 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'04') AS SPRT_YM,  4 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'05') AS SPRT_YM,  5 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'06') AS SPRT_YM,  6 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'07') AS SPRT_YM,  7 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'08') AS SPRT_YM,  8 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'09') AS SPRT_YM,  9 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'10') AS SPRT_YM, 10 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'11') AS SPRT_YM, 11 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'12') AS SPRT_YM, 12 AS SORT_ORDER
+		    ) YM
+		    LEFT JOIN
+		    (
+			SELECT SUBSTRING(A.SLCTN_YMD, 1, 6) AS SPRT_YM
+			       , SUM(CASE WHEN B.SRC_SYS_CD = '01' THEN 1 ELSE 0 END) AS EDU_CNT
+			       , SUM(CASE WHEN B.SRC_SYS_CD = '02' THEN 1 ELSE 0 END) AS CNSLT_CNT
+			       , SUM(CASE WHEN B.SRC_SYS_CD = '03' THEN 1 ELSE 0 END) AS HOPE_CNT
+			       , SUM(CASE WHEN B.SRC_SYS_CD = '04' THEN 1 ELSE 0 END) AS DL_CNT
+			       , SUM(CASE WHEN B.SRC_SYS_CD = '05' THEN 1 ELSE 0 END) AS PL_CNT
+			  FROM SPRT_BIZ_APLY A
+			  LEFT OUTER JOIN SPRT_BIZ B
+			    ON A.SPRT_BIZ_SN = B.SPRT_BIZ_SN
+			 WHERE A.SLCTN_YMD BETWEEN CONCAT(#{BIZ_YEAR}, '0101') AND CONCAT(#{BIZ_YEAR}, '1231')
+			   AND A.APLY_STS_CD = '1'
+			 GROUP BY SUBSTRING(A.SLCTN_YMD, 1, 6)
+			 ) V_DATA
+			 ON YM.SPRT_YM = V_DATA.SPRT_YM
+		ORDER BY 1
+	</select>
+
+	<!-- 사업코드 정보 조회 -->
+	<select id="M04BizList" resultType="java.util.LinkedHashMap">
+		SELECT CMN_CD
+		     , CMN_CD_NM
+		     , CASE CMN_CD
+		       WHEN '03' THEN 1
+		       WHEN '04' THEN 2
+		       WHEN '05' THEN 3
+		       WHEN '01' THEN 4
+		       WHEN '02' THEN 5 END SORT_ORDER
+		  FROM CMN_CD
+		 WHERE CMN_DIV_CD = 'SRC_SYS_CD'
+		 ORDER BY 3
+	</select>
+
+	<!-- 5. 월별 지원금액 현황 -->
+	<select id="M05" resultType="java.util.LinkedHashMap">
+		/* SQL ID :  MainMapper.M05 */
+		SELECT YM.SORT_ORDER
+			 , DATE_FORMAT(CONCAT(YM.SPRT_YM,'01'),'%m')  AS SPRT_YM /* 지원사업 년월 */
+			 , SUBSTRING(YM.SPRT_YM,1,4) AS SPRT_Y /* 지원사업 년 */
+			 , SUBSTRING(YM.SPRT_YM,5,6) AS SPRT_M /* 지원사업 월 */
+			 , IFNULL(GIVE_AMT,0) AS GIVE_AMT /* 지원금액 */
+		  FROM
+			(
+				SELECT CONCAT(#{BIZ_YEAR},'01') AS SPRT_YM,  1 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'02') AS SPRT_YM,  2 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'03') AS SPRT_YM,  3 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'04') AS SPRT_YM,  4 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'05') AS SPRT_YM,  5 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'06') AS SPRT_YM,  6 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'07') AS SPRT_YM,  7 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'08') AS SPRT_YM,  8 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'09') AS SPRT_YM,  9 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'10') AS SPRT_YM, 10 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'11') AS SPRT_YM, 11 AS SORT_ORDER UNION
+				SELECT CONCAT(#{BIZ_YEAR},'12') AS SPRT_YM, 12 AS SORT_ORDER
+			) YM
+			LEFT JOIN
+			(
+				SELECT SUBSTRING(A.SLCTN_YMD, 1, 6) AS SPRT_YM
+					 , FLOOR(SUM(A.GIVE_AMT) / 1000) AS GIVE_AMT
+				  FROM SPRT_BIZ_APLY A
+				 WHERE A.SLCTN_YMD BETWEEN CONCAT(#{BIZ_YEAR}, '0101') AND CONCAT(#{BIZ_YEAR}, '1231')
+				   AND A.APLY_STS_CD = '1'
+				 GROUP BY SUBSTRING(A.SLCTN_YMD, 1, 6)
+			 ) V_DATA
+			 ON YM.SPRT_YM = V_DATA.SPRT_YM
+		ORDER BY 1
+	</select>
+
+	<!-- 6. 업종별 지원 사업 현황 전체 -->
+	<select id="M06L" resultType="java.util.LinkedHashMap">
+		/* SQL ID :  MainMapper.M06L */
+		SELECT CASE WHEN A.KSIC_LCLS_CD IS NULL THEN 'ZZZ'
+		            ELSE A.KSIC_LCLS_CD END AS CLS_CD
+		     , CASE WHEN MAX(B.KSIC_LCLS_NM) IS NULL THEN '기타'
+		            ELSE MAX(B.KSIC_LCLS_NM) END CLS_NM
+		     , COUNT(DISTINCT A.APLY_SN) AS SPRT_CNT
+		  FROM SPRT_BIZ_APLY A
+		  LEFT OUTER JOIN
+		  ( SELECT KSIC_LCLS_CD
+		         , MAX(KSIC_LCLS_NM) AS KSIC_LCLS_NM
+			  FROM BIZCLS_KSIC_LINK
+			 GROUP BY KSIC_LCLS_CD
+		  ) B
+		  ON A.KSIC_LCLS_CD = B.KSIC_LCLS_CD
+		WHERE A.SLCTN_YMD BETWEEN CONCAT(#{SLCTN_YM},'01') AND CONCAT(#{SLCTN_YM},'31')
+		 AND A.APLY_STS_CD = '1'
+	   GROUP BY A.KSIC_LCLS_CD
+		ORDER BY 1
+	</select>
+
+	<!-- 7. 업종별 지원 사업 현황 중분류 -->
+	<select id="M06M" resultType="java.util.LinkedHashMap">
+		/* SQL ID :  MainMapper.M06M */
+		SELECT CASE WHEN A.KSIC_MCLS_CD IS NULL THEN 'ZZZ'
+		            ELSE A.KSIC_MCLS_CD END AS CLS_CD
+		     , CASE WHEN MAX(B.KSIC_MCLS_NM) IS NULL THEN '기타'
+		            ELSE MAX(B.KSIC_MCLS_NM) END CLS_NM
+		     , COUNT(DISTINCT A.APLY_SN) AS SPRT_CNT
+		  FROM SPRT_BIZ_APLY A
+		  LEFT OUTER JOIN
+		  ( SELECT KSIC_MCLS_CD
+		         , MAX(KSIC_MCLS_NM) AS KSIC_MCLS_NM
+			  FROM BIZCLS_KSIC_LINK
+			 WHERE KSIC_LCLS_CD = #{KSIC_LCLS_CD}
+			 GROUP BY KSIC_MCLS_CD
+		  ) B
+		  ON A.KSIC_MCLS_CD = B.KSIC_MCLS_CD
+	   WHERE A.SLCTN_YMD BETWEEN CONCAT(#{SLCTN_YM},'01') AND CONCAT(#{SLCTN_YM},'31')
+		 AND A.APLY_STS_CD = '1'
+		<!-- 기타카테고리인 경우 -->
+		<if test='KSIC_LCLS_CD == "ZZZ"'>
+	     AND A.KSIC_LCLS_CD IS NULL
+		</if>
+		<!-- 기타카테고리가 아닌 경우 -->
+		<if test='KSIC_LCLS_CD != "ZZZ"'>
+	     AND A.KSIC_LCLS_CD = #{KSIC_LCLS_CD}
+		</if>
+	   GROUP BY A.KSIC_MCLS_CD
+		ORDER BY 1
+	</select>
+
+	<!-- 7. 지역별 지원사업 현황 -->
+	<select id="M07" resultType="java.util.LinkedHashMap">
+		/* SQL ID :  MainMapper.M07 */
+		SELECT #{SLCTN_YM} AS SPRT_YM
+		     , V_RGN.RGN_CD
+		     , V_RGN.RGN_NM
+		     , IFNULL(V_DATA.GIVE_CNT, 0) AS GIVE_CNT
+		     , IFNULL(V_DATA.GIVE_AMT, 0) AS GIVE_AMT
+		  FROM
+		( SELECT '01' AS RGN_CD, '서울'  AS RGN_NM UNION ALL
+		  SELECT '02' AS RGN_CD, '부산'  AS RGN_NM UNION ALL
+		  SELECT '03' AS RGN_CD, '대구'  AS RGN_NM UNION ALL
+		  SELECT '04' AS RGN_CD, '광주'  AS RGN_NM UNION ALL
+		  SELECT '05' AS RGN_CD, '인천'  AS RGN_NM UNION ALL
+		  SELECT '06' AS RGN_CD, '대전'  AS RGN_NM UNION ALL
+		  SELECT '07' AS RGN_CD, '울산'  AS RGN_NM UNION ALL
+		  SELECT '11' AS RGN_CD, '경기도' AS RGN_NM UNION ALL
+		  SELECT '12' AS RGN_CD, '강원'  AS RGN_NM UNION ALL
+		  SELECT '13' AS RGN_CD, '충북'  AS RGN_NM UNION ALL
+		  SELECT '99' AS RGN_CD, '세종'  AS RGN_NM UNION ALL
+		  SELECT '14' AS RGN_CD, '충남'  AS RGN_NM UNION ALL
+		  SELECT '15' AS RGN_CD, '전북'  AS RGN_NM UNION ALL
+		  SELECT '16' AS RGN_CD, '전남'  AS RGN_NM UNION ALL
+		  SELECT '17' AS RGN_CD, '경북'  AS RGN_NM UNION ALL
+		  SELECT '18' AS RGN_CD, '경남'  AS RGN_NM UNION ALL
+		  SELECT '19' AS RGN_CD, '제주'  AS RGN_NM UNION ALL
+		  SELECT 'ZZ' AS RGN_CD, '기타'  AS RGN_NM
+		) AS V_RGN
+		LEFT OUTER JOIN  (
+			SELECT SUBSTRING(A.SLCTN_YMD, 1, 6) AS SPRT_YM
+				 , CASE WHEN B.RGN_CD IS NULL THEN 'ZZ'
+						ELSE B.RGN_CD END RGN_CD
+				 , COUNT(DISTINCT A.APLY_SN) AS GIVE_CNT
+				 , FLOOR(SUM(A.GIVE_AMT) / 1000) AS GIVE_AMT
+				 , 1 AS SORT_ORDER
+			  FROM SPRT_BIZ_APLY A
+			  LEFT OUTER JOIN (
+				  SELECT B.RGN_CD
+					   , B.DEPT_CD AS DEPT_CD
+					FROM SEDA_DEPT A
+					JOIN SEDA_DEPT B
+					  ON A.DEPT_CD = B.UP_DEPT_CD
+				   WHERE A.CNTR_TYPE_CD IN ('10') -- 10:지역본부
+					 AND A.USE_YN ='Y'
+					 AND B.USE_YN ='Y'
+			  ) B
+			  ON A.SPRT_CNTR_CD = B.DEPT_CD
+		   WHERE A.SLCTN_YMD BETWEEN CONCAT(#{SLCTN_YM},'01') AND CONCAT(#{SLCTN_YM},'31')
+			 AND A.APLY_STS_CD = '1'
+		   GROUP BY SUBSTRING(A.SLCTN_YMD, 1, 6), B.RGN_CD
+		) V_DATA
+		ON V_RGN.RGN_CD = V_DATA.RGN_CD
+	   ORDER BY V_RGN.RGN_CD
+	</select>
+
+</mapper>

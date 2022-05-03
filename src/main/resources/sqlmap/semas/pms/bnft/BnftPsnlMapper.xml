@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 수혜개인기본 -->
+<mapper namespace="kr.bizdata.semas.pms.bnft.mapper.BnftPsnlMapper">
+	
+	<insert id="insert">
+		/* SQL ID : BnftPsnlMapper.insert */
+		INSERT INTO BNFT_PSNL (
+		       DI_VAL           /* DI값 */
+		     , PSNL_NM          /* 개인이름 */
+		     , EML              /* 이메일 */
+		     , MBNO             /* 핸드폰 */
+		     , TELNO            /* 전화번호 */
+		     , ZIP              /* 우편번호 */
+		     , ADDR             /* 기본주소 */
+		     , DADDR            /* 상세주소 */
+		     , BRDT             /* 생년월일 */
+		     , GNDR_CD          /* 성별코드 */
+		     , CI_VAL           /* CI값 */
+		     , SRC_SYS_CD       /* 출처시스템코드 */
+		     , SRC_LGN_ID       /* 출처시스템로그인ID */
+		     , SRC_REG_DT       /* 출처시스템등록일시 */
+		     , REG_DT           /* 등록일시 */
+		) VALUES (
+		       #{diVal}         /* DI값 */
+		     , #{psnlNm}        /* 개인이름 */
+		     , #{eml}           /* 이메일 */
+		     , hex(aes_encrypt(#{mbno}, SHA2('F@42',512))) /* 핸드폰 */
+		     , #{telno}         /* 전화번호 */
+		     , #{zip}           /* 우편번호 */
+		     , #{addr}          /* 기본주소 */
+		     , #{daddr}         /* 상세주소 */
+		     , #{brdt}          /* 생년월일 */
+		     , #{gndrCd}        /* 성별코드 */
+		     , #{ciVal}         /* CI값 */
+		     , #{srcSysCd}      /* 출처시스템코드 */
+		     , #{srcLgnId}      /* 출처시스템로그인ID */
+		     , #{srcRegDt}      /* 출처시스템등록일시 */
+		     , NOW()            /* 등록일시 */
+		)
+	</insert>
+	
+	<update id="update">
+		/* SQL ID : BnftPsnlMapper.update */
+		UPDATE BNFT_PSNL
+		   SET PSNL_NM      = #{psnlNm}        /* 개인이름 */
+		     , EML          = #{eml}           /* 이메일 */
+		     , MBNO         = hex(aes_encrypt(#{mbno}, SHA2('F@42',512))) /* 핸드폰 */
+		     , TELNO        = #{telno}         /* 전화번호 */
+		     , ZIP          = #{zip}           /* 우편번호 */
+		     , ADDR         = #{addr}          /* 기본주소 */
+		     , DADDR        = #{daddr}         /* 상세주소 */
+		     , BRDT         = #{brdt}          /* 생년월일 */
+		     , GNDR_CD      = #{gndrCd}        /* 성별코드 */
+		     , CI_VAL       = #{ciVal}         /* CI값 */
+		     , SRC_SYS_CD   = #{srcSysCd}      /* 출처시스템코드 */
+		     , SRC_LGN_ID   = #{srcLgnId}      /* 출처시스템로그인ID */
+		     , SRC_REG_DT   = #{srcRegDt}      /* 출처시스템등록일시 */
+		     , UPD_DT       = NOW()            /* 수정일시 */
+		 WHERE DI_VAL = #{diVal}  /* DI값 */
+	</update>
+	
+	<select id="exists" resultType="boolean">
+		/* SQL ID : BnftPsnlMapper.exists */
+		SELECT CASE WHEN COUNT(*) > 0 THEN '1' ELSE '0' END
+		  FROM BNFT_PSNL
+		 WHERE DI_VAL = #{diVal}  /* DI값 */
+	</select>
+	
+	<resultMap id="BnftPsnlInfo" type="kr.bizdata.semas.pms.bnft.info.BnftPsnlInfo" />
+	
+	<sql id="columns_BnftPsnlInfo">
+		       DI_VAL           /* DI값 */
+		     , PSNL_NM          /* 개인이름 */
+		     , EML              /* 이메일 */
+		     , cast(aes_decrypt(unhex(MBNO), SHA2('F@42',512))as char) AS MBNO /* 핸드폰 */
+		     , TELNO            /* 전화번호 */
+		     , ZIP              /* 우편번호 */
+		     , ADDR             /* 기본주소 */
+		     , DADDR            /* 상세주소 */
+		     , BRDT             /* 생년월일 */
+		     , GNDR_CD          /* 성별코드 */
+		     , CI_VAL           /* CI값 */
+		     , SRC_SYS_CD       /* 출처시스템코드 */
+		     , SRC_LGN_ID       /* 출처시스템로그인ID */
+		     , SRC_REG_DT       /* 출처시스템등록일시 */
+		     , REG_DT           /* 등록일시 */
+		     , UPD_DT           /* 수정일시 */
+	</sql>
+	
+	<select id="select" resultMap="BnftPsnlInfo">
+		/* SQL ID : BnftPsnlMapper.select */
+		SELECT <include refid="columns_BnftPsnlInfo" />
+		  FROM BNFT_PSNL
+		 WHERE DI_VAL = #{diVal}  /* DI값 */
+	</select>
+	
+</mapper>

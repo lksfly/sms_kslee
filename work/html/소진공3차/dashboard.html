@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<title>bizdata source</title>
+
+		<!-- 플러그인 css -->
+		<link rel="stylesheet" href="./assets/plugin/normalize/normalize.css">
+
+		<!-- jquery-ui -->
+		<link rel="stylesheet" href="./assets/plugin/jquery-ui/jquery-ui.css">
+
+		<!-- fontawesome css -->
+		<link rel="stylesheet" href="./assets/plugin/fontawesome/css/all.min.css">
+
+		<!-- datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/datatables.css">
+		<!-- custom_datatables css -->
+		<link rel="stylesheet" href="./assets/plugin/datatables/custom_datatables.css">
+
+		<!-- 자체 css -->
+		<link rel="stylesheet" href="./assets/css/main.css">
+
+
+		<style>
+		</style>
+	</head>
+
+	<body>
+		<div class="gnb-wrapper">
+			<header class="gnb-header fixed">
+				<a href="./main.html" class="header-logo"><img src="./assets/images/logo/semas.svg" /></a>
+				<div class="spacer"></div>
+				<div class="header-end">
+					<div class="user-info">소상공인진흥공단 머머부서 어디어디 팀 홍길동님</div>
+					<button type="button" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i>LogOut</button>
+				</div>
+			</header>
+			<div class="gnb-body">
+				<nav class="gnb-nav fixed">
+					<ul class="gnb-nav-list">
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">Dashboard</a>
+						</li>
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">지원사업현황</a>
+						</li>
+						<li class="gnb-nab-entity active">
+							<a href="#" class="menu-title">업체 마스터</a>
+						</li>
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">개인 마스터</a>
+						</li>
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">센터 관리</a>
+						</li>
+						<li class="gnb-nab-entity">
+							<a href="#" class="menu-title">Data Batch</a>
+						</li>
+						<li class="gnb-nab-group">
+							<a href="#" class="menu-title">가이드</a>
+							<ul class="gnb-nav-sub-list" style="display: none;">
+								<li><a href="">기본정책</a></li>
+								<li><a href="">규칙 가이드</a></li>
+								<li><a href="">마무리 작업</a></li>
+							</ul>
+						</li>
+						<li class="gnb-nab-group">
+							<a href="#" class="menu-title">layout</a>
+							<ul class="gnb-nav-sub-list" style="display: none;">
+								<li><a href="">header</a></li>
+								<li><a href="">nav</a></li>
+								<li><a href="">body</a></li>
+								<li><a href="">error</a></li>
+							</ul>
+						</li>
+					</ul>
+				</nav>
+				<article class="content-wrapper">
+					<section class="container-fluid">
+						<div class="row">
+							<div class="col s12 m5">
+								<div class="title-row">
+									<div class="content-title">11월 지원사업 진행 현황</div>
+									<div class="tooltip">
+										<i class="fas fa-info-circle"></i>
+										<div class="tooltip-content left"><span class="title">Tip1. 총 지원건수 일자 측정 기준은 아래와 같은 기준으로 측정합니다.</span>
+											1. 교육:수료일자
+											2. 희망리턴
+											- 사업정리:지급일자
+											- 점포철거: 지급일자
+											- 법률자문: 신청일자
+											- 재기교육: 수료일자
+											- 재도장려금: 지급일자
+											- 전직장려금: 지급일자
+											3. 직접대출:지급일자
+											4. 대리대출:지급일자
+											5. 컨설팅:지급일자
+
+											<span class="title">Tip2. 지원금액이 표기되는 사업은 아래와 같습니다.</span>
+											1. 교육
+											2. 희망리턴
+											- 사업정리
+											- 점포철거
+											- 전직장려금
+											3. 직접대출
+											4. 대리대출
+											5. 컨설팅
+
+											<span class="title">Tip3. 지원대상수는 해당월 총 지원건수 중 기업과 개인으로 분류하여 중복을 제거한 값을 나타냅니다.</span>
+											1. 기업: 당월 지원건수 중 사업자번호를 기준으로 중복제거한 후 측정한 수
+											2. 개인: 당월 지원건수 중 사업자번호가 없는 개인신청자 중 DI값 기준으로 중복제거한 후 측정한 수
+										</div>
+									</div>
+									<div class="spacer"></div>
+									<button type="button" class="btn btn-s btn-round btn-bright-main nomargin"><i class="fas fa-file-alt icon-left"></i>지난 지원 사업 현황</button>
+								</div>
+								<div class="dashboard-statistics1">
+									<div class="each">
+										<h5>지원사업 수</h5>
+										<p>1,260<span>건</span></p>
+									</div>
+									<div class="each">
+										<h5>지원 금액</h5>
+										<p>20,200<span>만원</span></p>
+									</div>
+									<div class="each">
+										<h5>지원 센터</h5>
+										<p>250<span>개</span></p>
+									</div>
+									<div class="each">
+										<h5>지원 업체 수</h5>
+										<p>450<span>개</span></p>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 m7">
+								<div class="title-row content-title">11월 사업별 지원 현황</div>
+								<div class="dashboard-statistics2">
+									<div class="each">
+										<h5>희망리턴</h5>
+										<p>260<span>건</span></p>
+									</div>
+									<div class="each">
+										<h5>직접대출</h5>
+										<p>260<span>건</span></p>
+									</div>
+									<div class="each">
+										<h5>대리대출</h5>
+										<p>260<span>건</span></p>
+									</div>
+									<div class="each">
+										<h5>교육</h5>
+										<p>260<span>건</span></p>
+									</div>
+									<div class="each">
+										<h5>컨설팅</h5>
+										<p>260<span>건</span></p>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 m6">
+								<div class="card">
+									<div class="card-header row">
+										<div class="content-title">월별 지원 사업 현황</div>
+										<div class="selectinput select-S1">
+											<button class="label" id="selectFor1">2021</button>
+											<div class="optionList" style="display: none;">
+												<ul style="max-height: 150px;">
+													<li class="optionItem">2021</li>
+													<li class="optionItem">2020</li>
+													<li class="optionItem">2019</li>
+													<li class="optionItem">2018</li>
+													<li class="optionItem">2017</li>
+													<li class="optionItem">2016</li>
+													<li class="optionItem">2015</li>
+												</ul>
+											</div>
+										</div>
+										<div class="spacer"></div>
+										<button type="button" class="btn btn-s btn-round btn-bright-main nomargin"><i class="fas fa-file-alt icon-left"></i>로우데이터</button>
+									</div>
+									<div class="card-body">
+										<div class="" style="height: 236px;">chart</div>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 m6">
+								<div class="card">
+									<div class="card-header row">
+										<div class="content-title">월별 지원 사업 금액 현황</div>
+
+										<div class="selectinput select-S1">
+											<button class="label" id="selectFor1">2021</button>
+											<div class="optionList" style="display: none;">
+												<ul style="max-height: 150px;">
+													<li class="optionItem">2021</li>
+													<li class="optionItem">2020</li>
+													<li class="optionItem">2019</li>
+													<li class="optionItem">2018</li>
+													<li class="optionItem">2017</li>
+													<li class="optionItem">2016</li>
+													<li class="optionItem">2015</li>
+												</ul>
+											</div>
+										</div>
+										<div class="spacer"></div>
+										<button type="button" class="btn btn-s btn-round btn-bright-main nomargin"><i class="fas fa-file-alt icon-left"></i>로우데이터</button>
+									</div>
+									<div class="card-body">
+										<div class="" style="height: 236px;">chart</div>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 m12">
+								<div class="card">
+									<div class="card-header row">
+										<div class="content-title">지급 일자 별 지원 사업 현황</div>
+										<div class="spacer"></div>
+										<button type="button" class="btn btn-s btn-round btn-bright-main nomargin"><i class="fas fa-file-alt icon-left"></i>로우데이터</button>
+									</div>
+									<div class="card-body">
+										<div class="" style="height: 186px;">chart</div>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 m9">
+								<div class="card">
+									<div class="card-header row">
+										<div class="content-title">업종별 지원 사업 현황</div>
+										<div class="spacer"></div>
+										<button type="button" class="btn btn-s btn-round btn-bright-main nomargin"><i class="fas fa-file-alt icon-left"></i>로우데이터</button>
+									</div>
+									<div class="card-body">
+										<div class="chart-breadcrumb1 chart-back">
+											<button class="btn btn-back" href="#"><i class="fas fa-arrow-left"></i></button>
+											<button class="text">표준산업분류 대분류 기준</button>>
+											<span class="text">C.제조업</span>
+										</div>
+										<!-- <div class="chart-breadcrumb1 chart-back">
+											<span class="text">표준산업분류 대분류 기준</span>
+										</div> -->
+										<div class="" style="min-height: 455px;">chart</div>
+									</div>
+								</div>
+							</div>
+							<div class="col s12 m3">
+								<div class="card">
+									<div class="card-header row">
+										<div class="content-title">지역별 지원 사업 현황</div>
+										<div class="spacer"></div>
+										<button type="button" class="btn btn-s btn-round btn-bright-main nomargin"><i class="fas fa-file-alt icon-left"></i>로우데이터</button>
+									</div>
+									<div class="card-body">
+										<div class="pubilc-mapChart">
+											<div class="legend">
+												<div class="box"></div>
+												<span class="text">지원 사업 수</span>
+											</div>
+											<div class="map">
+												<img src="./assets/images/map.png" alt="지역별 지원 사업 현황 지도">
+												<div id="marker-11" class="marker" style="top: 71px;left: 90px;">서울<div class="count">6,120</div></div>
+												<div id="marker-26" class="marker" style="top: 340px;left: 231px;">부산<div class="count">6,120</div></div>
+												<div id="marker-27" class="marker" style="top: 259px;left: 214px;">대구<div class="count">6,120</div></div>
+												<div id="marker-28" class="marker" style="top: 105px;left: 40px;">인천<div class="count">6,120</div></div>
+												<div id="marker-29" class="marker" style="top: 326px;left: 75px;">광주<div class="count">6,120</div></div>
+												<div id="marker-30" class="marker" style="top: 233px; left: 154px;">대전<div class="count">6,120</div></div>
+												<div id="marker-31" class="marker" style="top: 293px;left: 268px;">울산<div class="count">6,120</div></div>
+												<div id="marker-36" class="marker" style="top: 186px;left: 118px;">세종<div class="count">6,120</div></div>
+												<div id="marker-41" class="marker" style="top: 123px;left: 118px;">경기도<div class="count">6,120</div></div>
+												<div id="marker-42" class="marker" style="top: 75px; left: 199px;">강원<div class="count">6,120</div></div>
+												<div id="marker-43" class="marker" style="top: 151px;left: 173px;">충북<div class="count">6,120</div></div>
+												<div id="marker-44" class="marker" style="top: 169px;left: 63px;">충남<div class="count">6,120</div></div>
+												<div id="marker-45" class="marker" style="top: 271px;left: 102px;">전북<div class="count">6,120</div></div>
+												<div id="marker-46" class="marker" style="top: 373px;left: 92px;">전남<div class="count">6,120</div></div>
+												<div id="marker-47" class="marker" style="top: 193px;left: 241px;">경북<div class="count">6,120</div></div>
+												<div id="marker-48" class="marker" style="top: 306px;left: 173px;">경남<div class="count">6,120</div></div>
+												<div id="marker-50" class="marker" style="top: 440px;left: 61px;">제주<div class="count">6,120</div></div>
+												<!--  marker가 클릭이 되는지 잘 모르겠어요 된다고 하시면 hover 추가 해드릴게요 -->
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+				</article>
+			</div>
+		</div>
+		<!--
+			start:: script
+
+			body바로 위에 스크립트 태그를 몰아넣는다.
+			head와 body의 내용을 전부다 불러온 후에, 스크립트 파일을 로드
+		-->
+		<!-- jquery -->
+		<script src="./assets/plugin/jquery/jquery-3.5.1.min.js"></script>
+
+		<!-- jquery ui -->
+		<script src="./assets/plugin/jquery-ui/jquery-ui.js"></script>
+
+		<!-- datatables -->
+		<script src="./assets/plugin/datatables/datatables.min.js"></script>
+
+		<!-- main.js  -->
+		<script src="./assets/js/main.js"></script>
+
+		<script>
+			$(document).ready(function () {
+				$(".gnb-nab-group .menu-title").click(function () {
+					var $group = $(this.closest(".gnb-nab-group"))
+					if ($group.hasClass("active")) {
+						$group.removeClass("active").children(".gnb-nav-sub-list").slideUp();
+					} else {
+						$group.addClass("active").children(".gnb-nav-sub-list").slideDown();
+					}
+				});
+
+			})
+		</script>
+
+	</body>
+
+</html>

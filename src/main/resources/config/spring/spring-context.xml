@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:c="http://www.springframework.org/schema/c"
+		xmlns:p="http://www.springframework.org/schema/p"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+							http://www.springframework.org/schema/util    http://www.springframework.org/schema/util/spring-util.xsd">
+	
+	<context:component-scan base-package="kr.bizdata.semas" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+	</context:component-scan>
+	
+	<!-- Properties -->
+	<util:properties id="applicationProperties" location="classpath:${application.properties:application_L.properties}" /> <!-- -Dapplication.properties="application_R.properties" -->
+	
+	<!-- Config -->
+	<bean class="kr.bizdata.core.config.Config" p:ignoreUnresolvablePlaceholders="true" p:properties-ref="applicationProperties" />
+	
+	<!-- Password Encoder: 로그인 비밀번호를 암호화하기 위한 모듈 -->
+	<bean id="passwordEncoder" class="kr.bizdata.core.security.SemasPasswordEncoder" />
+	
+	<!-- BeanUtil implements ApplicationContextAware -->
+	<bean class="kr.bizdata.core.util.BeanUtil" />
+	
+	<!-- Import -->
+	<import resource="classpath:config/spring/datasource.xml" />
+	<import resource="classpath:config/spring/scheduler.xml" />
+	
+</beans>

@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 컨설팅시스템 -->
+<mapper namespace="kr.bizdata.semas.from.cnslt.mapper.FromCnsltMapper">
+	
+	<resultMap id="FromCnsltInfo" type="kr.bizdata.semas.from.cnslt.info.FromCnsltInfo" />
+	
+	<!-- 승인 -->
+	<select id="selectList_1" resultMap="FromCnsltInfo" fetchSize="1000">
+		/* SQL ID : FromCnsltMapper.selectList_1 */
+		SELECT NULL                                      AS SPRT_BIZ_NM         /* 지원사업명 */
+		     , A.ACT_YEAR                                AS SPRT_BIZ_YR         /* 지원사업연도 */
+		     , '02'                                      AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '02'                                      AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             
+		     , A.CENTER_CD2                              AS SPRT_CNTR_CD        /* 지원센터코드 */
+		     , '1'                                       AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     , CASE WHEN LENGTH(REGEXP_REPLACE(B.CRES_NO, '[^[:digit:]]')) = 10 THEN REGEXP_REPLACE(B.CRES_NO, '[^[:digit:]]')
+		            ELSE NULL END                        AS BRNO                /* 사업자등록번호 (-포함, 10자미만존재, 문자포함) */
+		     , B.COM_NM                                  AS ENT_NM              /* 기업명 */
+		     , NULL                                      AS CRNO                /* 법인등록번호 */
+		     , CASE WHEN B.CRES_NO IS NULL OR LENGTH(REGEXP_REPLACE(B.CRES_NO, '[^[:digit:]]')) != 10 THEN '9'
+		            WHEN SUBSTR(REGEXP_REPLACE(B.CRES_NO, '[^[:digit:]]'), 4, 2) IN ('81', '82', '83', '84', '85', '86', '87', '88') THEN '1'
+		            ELSE '2' END                         AS BZMN_TYPE_CD        /* 사업자유형코드 (1: 법인기업, 2: 개인기업, 9: 알수없음) */
+		     , REGEXP_REPLACE(B.COM_ZIP, '[^[:digit:]]') AS ENT_ZIP             /* 기업우편번호 (,콤마존재) */
+		     , B.COM_ADDR1                               AS ENT_ADDR            /* 기업기본주소 */
+		     , B.COM_ADDR2                               AS ENT_DADDR           /* 기업상세주소 */
+		     , TO_CHAR(B.BIZ_YMD, 'YYYYMMDD')            AS FNDN_YMD            /* 설립일자 (DATETIME형식) */
+		     , B.SALES3_AMT                              AS SLS_AMT             /* 매출액 */
+		     , NULL                                      AS FT_WRKR_CNT         /* 상시근로자수 */
+		     , NULL                                      AS CLSBIZ_YMD          /* 폐업일자 */
+		     , NULL                                      AS KSIC_SRCH_CD        /* 표준산업분류 검색용 코드 (업종코드 또는 표준산업분류코드) */
+		     , NULL                                      AS ENT_TELNO           /* 기업전화번호 */
+		     , A.DISCRHASH                               AS DI_VAL              /* DI값 */
+		     , A.REQ_NM                                  AS APLCNT_NM           /* 신청자명 */
+		     , C.REAL_PAYMENT                            AS GIVE_AMT            /* 지급금액 */
+		     , crypto_semas.DEC(A.REQ_EMAIL,'F@42')      AS APLCNT_EML          /* 신청자이메일 (복호화) */
+		     , crypto_semas.DEC(A.PHONE_NO,'F@42')       AS APLCNT_TELNO        /* 신청자전화번호 (복호화) */
+		     , crypto_semas.DEC(A.MOBILE_NO,'F@42')      AS APLCNT_MBNO         /* 신청자핸드폰 (복호화) */
+		     , REGEXP_REPLACE(crypto_semas.DEC(A.REQ_ZIP,'F@42'), '[^[:digit:]]') AS APLCNT_ZIP          /* 신청자우편번호 (복호화) */
+		     , crypto_semas.DEC(A.REQ_ADDR1,'F@42')                               AS APLCNT_ADDR         /* 신청자기본주소 (복호화) */
+		     , crypto_semas.DEC(A.REQ_ADDR2,'F@42')                               AS APLCNT_DADDR        /* 신청자상세주소 (복호화) */
+		     , TO_CHAR(A.BIRTHDATE, 'YYYYMMDD')          AS APLCNT_BRDT         /* 신청자생년월일 */
+		     , CASE WHEN A.GENDER = '1' THEN '1'
+		            WHEN A.GENDER = '2' THEN '2'
+		            ELSE '9' END                         AS APLCNT_GNDR_CD      /* 신청자성별코드 */
+		     , NULL                                      AS CI_VAL              /* CI값 */
+		     , D.LOGINID                                 AS SRC_LGN_ID          /* 출처시스템로그인ID */
+		     , TO_CHAR(A.RGST_YMD, 'YYYYMMDD')           AS APLY_YMD            /* 신청일자 */
+		     , NULL                                      AS GIVE_YMD            /* 지급일자 */
+		     , B.CEO_NM                                  AS CEO_NM              /* 대표자명 */
+		     , NULL                                      AS FNSH_YMD            /* 수료일자 */
+		     , A.RGST_YMD                                AS SRC_REG_DT          /* 출처시스템등록일시 */
+		     , TO_CHAR(A.RGST_YMD, 'YYYYMMDD')           AS SLCTN_YMD           /* 선정일자 (신청일자) */
+		     
+		     /* 컨설팅시스템 */
+		     , NULL                                      AS SPRT_BIZ_NM_SN      /* 지원사업명일련번호 */
+		     , A.REQ_SQ                                  AS CNSLT_APLY_SN       /* 컨설팅신청일련번호 */
+		     , A.ACT_YEAR                                AS ACTVT_YR            /* 활동연도 */
+		     , A.POY_CODE                                AS PLCY_CD             /* 정책코드 */
+		  FROM CONSULT.ACON_REQ_TB A  /* 신청 */
+		       JOIN CONSULT.ACON_BUSES_STAT B  /* 사업현황 */
+		         ON A.REQ_SQ = B.REQ_SQ
+		        AND A.ACT_YEAR = B.ACT_YEAR
+		        AND A.POY_CODE = B.POY_CODE
+		       JOIN (
+		                SELECT REQ_SQ, ACT_YEAR, POY_CODE, SUM(REAL_PAYMENT) AS REAL_PAYMENT
+		                  FROM CONSULT.ACON_MEM_TB  /* 지급 */
+		                 GROUP BY REQ_SQ, ACT_YEAR, POY_CODE
+		            ) C  /* 지급 */
+		         ON A.REQ_SQ = C.REQ_SQ
+		        AND A.ACT_YEAR = C.ACT_YEAR
+		        AND A.POY_CODE = C.POY_CODE  /* 히스토리와 JOIN하여 지급일자를 찾아야함 */
+		       LEFT OUTER JOIN SEDA.MEM_PUB_INFO D
+		         ON A.USER_ID = D.MEMID
+		       JOIN (
+		                SELECT REQ_SQ, ACT_YEAR, POY_CODE
+		                  FROM CONSULT.ACON_HIS_TB
+		                 WHERE HIS_CD = 'Z_COST_GIVE'  /* 이력에 지급코드가 한번이라도 입력됐을경우만 지급이라고 판단함 */
+		                   AND RGST_YMD BETWEEN #{param.startDt} AND #{param.endDt}  /* 배치쿼리일자 */
+		                 GROUP BY REQ_SQ, ACT_YEAR, POY_CODE
+		            ) REQ_HIS_CTE
+		         ON A.REQ_SQ = REQ_HIS_CTE.REQ_SQ
+		        AND A.ACT_YEAR = REQ_HIS_CTE.ACT_YEAR
+		        AND A.POY_CODE = REQ_HIS_CTE.POY_CODE
+		 WHERE A.HIS_CD NOT IN (
+		           'A_CNLT_REQT',
+		           'Z_REQT_CAN',
+		           'Z_RPAY_CAN_REQT',
+		           'Z_RPAY_CAN',
+		           'Z_LACU_CAN',
+		           'Z_AUTO_CAN',
+		           'X_CFT_DROP', 
+		           'X_CFT_CAN',
+		           'Z_COST_GIVE_NO'
+		       )
+	</select>
+	
+	<!-- 취소 -->
+	<select id="selectList_2" resultMap="FromCnsltInfo" fetchSize="1000">
+		/* SQL ID : FromCnsltMapper.selectList_2 */
+		WITH REQ_HIS_CTE AS (
+		    SELECT REQ_SQ, ACT_YEAR, POY_CODE 
+		      FROM CONSULT.ACON_HIS_TB
+		     WHERE HIS_CD IN (
+		               'Z_REQT_CAN',
+		               'Z_RPAY_CAN_REQT',
+		               'Z_RPAY_CAN',
+		               'Z_LACU_CAN',
+		               'Z_AUTO_CAN',
+		               'X_CFT_DROP', 
+		               'X_CFT_CAN',
+		               'Z_COST_GIVE_NO'
+		           )
+		       AND RGST_YMD BETWEEN #{param.startDt} AND #{param.endDt}  /* 배치쿼리일자 */
+		     GROUP BY REQ_SQ, ACT_YEAR, POY_CODE
+		)
+		SELECT '02'                                      AS SRC_SYS_CD          /* 출처시스템코드 (하드코딩) */
+		     , '02'                                      AS SPRT_BIZ_DIV_CD     /* 지원사업구분코드 (하드코딩) */
+             , '2'                                       AS APLY_STS_CD         /* 신청상태코드 (하드코딩) */
+		     /* 컨설팅시스템 */
+		     , A.REQ_SQ                                  AS CNSLT_APLY_SN       /* 컨설팅신청일련번호 */
+		     , A.ACT_YEAR                                AS ACTVT_YR            /* 활동연도 */
+		     , A.POY_CODE                                AS PLCY_CD             /* 정책코드 */
+		  FROM CONSULT.ACON_REQ_TB A  /* 신청 */ 
+		       JOIN REQ_HIS_CTE
+		         ON A.REQ_SQ = REQ_HIS_CTE.REQ_SQ
+		        AND A.ACT_YEAR = REQ_HIS_CTE.ACT_YEAR
+		        AND A.POY_CODE = REQ_HIS_CTE.POY_CODE
+		 WHERE A.HIS_CD IN (
+		           'Z_REQT_CAN',
+		           'Z_RPAY_CAN_REQT',
+		           'Z_RPAY_CAN',
+		           'Z_LACU_CAN',
+		           'Z_AUTO_CAN',
+		           'X_CFT_DROP', 
+		           'X_CFT_CAN',
+		           'Z_COST_GIVE_NO'
+		       )
+	</select>
+	
+</mapper>
